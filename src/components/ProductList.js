@@ -28,7 +28,7 @@ function ProductList() {
       <ul>
         {logs.map(log => (
           <li key={log.id}>
-            {log.fat}
+            {log.productName}
           </li>
         ))}
       </ul>
