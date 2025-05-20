@@ -1,72 +1,186 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { addProductLog } from '../API/productAPI';
 
 function AddProductForm() {
-  const [productName, setProductName] = useState('');
-  const [brands, setBrands] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [grams, setGrams] = useState('');
   const [message, setMessage] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Wyszukiwanie produktów przy zmianie searchTerm
+  useEffect(() => {
+    const searchProducts = async () => {
+      if (searchTerm.length > 2) {
+        setIsSearching(true);
+        try {
+          const response = await fetch(`http://localhost:5142/api/ProductsOperation/search?query=${encodeURIComponent(searchTerm)}`);
+          if (!response.ok) {
+  const text = await response.text(); // pokaż HTML/treść błędu
+  throw new Error(`Błąd HTTP ${response.status}: ${text}`);
+}
+const data = await response.json();
+          setProducts(data);
+        } catch (error) {
+          console.error('Błąd wyszukiwania:', error);
+          setProducts([]);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setProducts([]);
+      }
+    };
+
+    const timer = setTimeout(searchProducts, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Walidacja minimalna
-    if (!productName || !brands || !grams) {
-      setMessage('Wypełnij wszystkie pola');
+    if (!selectedProduct || !grams) {
+      setMessage('Wybierz produkt i podaj wagę');
       return;
     }
 
-    const product = {
-      productName,
-      brands,
-    };
-
     try {
-      const result = await addProductLog(product, parseFloat(grams));
+      const result = await addProductLog({
+        productName: selectedProduct.product_name,
+        brands: selectedProduct.brands || 'Nieznana',
+        code: selectedProduct.code,
+        grams: parseFloat(grams)
+      });
       setMessage(result);
       // Czyścimy formularz
-      setProductName('');
-      setBrands('');
+      setSearchTerm('');
+      setSelectedProduct(null);
       setGrams('');
+      setProducts([]);
     } catch (error) {
       setMessage('Błąd podczas dodawania produktu');
       console.error(error);
     }
   };
 
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
+    setSearchTerm(product.product_name || 'Nazwa nieznana');
+    setProducts([]);
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Nazwa produktu:</label>
-        <input
-          type="text"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Marka:</label>
-        <input
-          type="text"
-          value={brands}
-          onChange={(e) => setBrands(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Waga (gramy):</label>
-        <input
-          type="number"
-          value={grams}
-          onChange={(e) => setGrams(e.target.value)}
-          required
-          min="1"
-        />
-      </div>
-      <button type="submit">Dodaj produkt</button>
-      {message && <p>{message}</p>}
-    </form>
+    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+      <h2>Dodaj nowy produkt</h2>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Wyszukaj produkt:</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if (!e.target.value || e.target.value !== selectedProduct?.product_name) {
+                setSelectedProduct(null);
+              }
+            }}
+            placeholder="Wpisz nazwę produktu (min. 3 znaki)..."
+            style={{ width: '100%', padding: '8px' }}
+          />
+          
+          {isSearching && <p style={{ margin: '5px 0' }}>Wyszukiwanie...</p>}
+          
+          {products.length > 0 && !isSearching && (
+            <ul style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '5px 0',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              maxHeight: '200px',
+              overflowY: 'auto'
+            }}>
+              {products.map((product, index) => (
+                <li 
+                  key={product.code || index}
+                  onClick={() => handleProductSelect(product)}
+                  style={{
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: '#f9f9f9',
+                    borderBottom: '1px solid #eee',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#f9f9f9'}
+                >
+                  <strong>{product.product_name || 'Nazwa nieznana'}</strong>
+                  {product.brands && <div>Marka: {product.brands}</div>}
+                  {product.code && <div>Kod: {product.code}</div>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        
+        {selectedProduct && (
+          <div style={{
+            margin: '15px 0',
+            padding: '10px',
+            backgroundColor: '#f0f8ff',
+            borderRadius: '4px',
+            borderLeft: '4px solid #4285f4'
+          }}>
+            <h3 style={{ marginTop: 0 }}>Wybrany produkt:</h3>
+            <p><strong>Nazwa:</strong> {selectedProduct.product_name || 'Nazwa nieznana'}</p>
+            {selectedProduct.brands && <p><strong>Marka:</strong> {selectedProduct.brands}</p>}
+            {selectedProduct.code && <p><strong>Kod kreskowy:</strong> {selectedProduct.code}</p>}
+          </div>
+        )}
+        
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Waga (gramy):</label>
+          <input
+            type="number"
+            value={grams}
+            onChange={(e) => setGrams(e.target.value)}
+            required
+            min="1"
+            step="1"
+            style={{ width: '100%', padding: '8px' }}
+          />
+        </div>
+        
+        <button 
+          type="submit"
+          style={{
+            backgroundColor: '#4285f4',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
+          disabled={!selectedProduct || !grams}
+        >
+          Dodaj produkt
+        </button>
+        
+        {message && (
+          <p style={{
+            marginTop: '15px',
+            padding: '10px',
+            backgroundColor: message.includes('Błąd') ? '#ffebee' : '#e8f5e9',
+            color: message.includes('Błąd') ? '#c62828' : '#2e7d32',
+            borderRadius: '4px'
+          }}>
+            {message}
+          </p>
+        )}
+      </form>
+    </div>
   );
 }
 
