@@ -33,7 +33,7 @@ const data = await response.json();
       }
     };
 
-    const timer = setTimeout(searchProducts, 300);
+    const timer = setTimeout(searchProducts, 1000);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -66,7 +66,7 @@ const data = await response.json();
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
-    setSearchTerm(product.product_name || 'Nazwa nieznana');
+    setSearchTerm(product.productName || 'Nazwa nieznana');
     setProducts([]);
   };
 
@@ -115,7 +115,7 @@ const data = await response.json();
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#f9f9f9'}
                 >
-                  <strong>{product.product_name || 'Nazwa nieznana'}</strong>
+                  <strong>{product.productName || 'Nazwa nieznana'}</strong>
                   {product.brands && <div>Marka: {product.brands}</div>}
                   {product.code && <div>Kod: {product.code}</div>}
                 </li>
@@ -133,7 +133,7 @@ const data = await response.json();
             borderLeft: '4px solid #4285f4'
           }}>
             <h3 style={{ marginTop: 0 }}>Wybrany produkt:</h3>
-            <p><strong>Nazwa:</strong> {selectedProduct.product_name || 'Nazwa nieznana'}</p>
+            <p><strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}</p>
             {selectedProduct.brands && <p><strong>Marka:</strong> {selectedProduct.brands}</p>}
             {selectedProduct.code && <p><strong>Kod kreskowy:</strong> {selectedProduct.code}</p>}
           </div>

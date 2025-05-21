@@ -46,3 +46,4 @@ export async function addProductLog(product, grams) {
   if (!res.ok) throw new Error('Błąd dodawania produktu');
   return await res.text();
 }
+
