@@ -46,12 +46,29 @@ const data = await response.json();
     }
 
     try {
+ const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product: selectedProduct,
+        grams: parseFloat(grams)})})
+        if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Błąd kalkulatora: ${errorText}`);
+    }
+
+    const nutriments = await response.json();
+
+
       const result = await addProductLog({
-        productName: selectedProduct.product_name,
+        productName: selectedProduct.productName,
         brands: selectedProduct.brands || 'Nieznana',
         code: selectedProduct.code,
-        grams: parseFloat(grams)
+        grams: parseFloat(grams),
+        nutriments: nutriments
       });
+      console.log('Wysyłany produkt:', selectedProduct);
+
       setMessage(result);
       // Czyścimy formularz
       setSearchTerm('');
@@ -60,6 +77,7 @@ const data = await response.json();
       setProducts([]);
     } catch (error) {
       setMessage('Błąd podczas dodawania produktu');
+      
       console.error(error);
     }
   };
@@ -81,7 +99,7 @@ const data = await response.json();
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              if (!e.target.value || e.target.value !== selectedProduct?.product_name) {
+              if (!e.target.value || e.target.value !== selectedProduct?.productName) {
                 setSelectedProduct(null);
               }
             }}
@@ -136,6 +154,18 @@ const data = await response.json();
             <p><strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}</p>
             {selectedProduct.brands && <p><strong>Marka:</strong> {selectedProduct.brands}</p>}
             {selectedProduct.code && <p><strong>Kod kreskowy:</strong> {selectedProduct.code}</p>}
+            {selectedProduct.nutriments && (
+      <div style={{ marginTop: '10px' }}>
+        <h4>Wartości odżywcze (na 100g):</h4>
+        <ul style={{ paddingLeft: '20px' }}>
+          <li><strong>Kalorie:</strong> {selectedProduct.nutriments.energy} {selectedProduct.nutriments.energyUnit}</li>
+          <li><strong>Białko:</strong> {selectedProduct.nutriments.proteins} g</li>
+          <li><strong>Tłuszcz:</strong> {selectedProduct.nutriments.fat} g</li>
+          <li><strong>Węglowodany:</strong> {selectedProduct.nutriments.carbs} g</li>
+          <li><strong>Sól:</strong> {selectedProduct.nutriments.salt} g</li>
+        </ul>
+      </div>
+    )}
           </div>
         )}
         
@@ -151,7 +181,8 @@ const data = await response.json();
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
-        
+       
+
         <button 
           type="submit"
           style={{
