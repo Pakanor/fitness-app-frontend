@@ -8,6 +8,38 @@ function AddProductForm() {
   const [grams, setGrams] = useState('');
   const [message, setMessage] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [calculatedNutriments, setCalculatedNutriments] = useState(null);
+useEffect(() => {
+  const fetchNutriments = async () => {
+    if (selectedProduct && grams && !isNaN(grams)) {
+      try {
+        const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product: selectedProduct,
+            grams: parseFloat(grams)
+          })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Błąd kalkulatora: ${errorText}`);
+        }
+
+        const result = await response.json();
+        setCalculatedNutriments(result);
+      } catch (error) {
+        console.error('Błąd przeliczania wartości odżywczych:', error);
+        setCalculatedNutriments(null);
+      }
+    } else {
+      setCalculatedNutriments(null);
+    }
+  };
+
+  fetchNutriments();
+}, [grams, selectedProduct]);
 
   // Wyszukiwanie produktów przy zmianie searchTerm
   useEffect(() => {
@@ -84,7 +116,7 @@ const data = await response.json();
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
-    setSearchTerm(product.productName || 'Nazwa nieznana');
+     setSearchTerm(''); 
     setProducts([]);
   };
 
@@ -181,7 +213,19 @@ const data = await response.json();
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
-       
+       {calculatedNutriments && (
+  <div style={{ marginTop: '10px' }}>
+    <h4>Wartości odżywcze (dla {grams}g):</h4>
+    <ul style={{ paddingLeft: '20px' }}>
+      <li><strong>Kalorie:</strong> {calculatedNutriments.energy} {calculatedNutriments.energyUnit}</li>
+      <li><strong>Białko:</strong> {calculatedNutriments.proteins} g</li>
+      <li><strong>Tłuszcz:</strong> {calculatedNutriments.fat} g</li>
+      <li><strong>Węglowodany:</strong> {calculatedNutriments.carbs} g</li>
+      <li><strong>Sól:</strong> {calculatedNutriments.salt} g</li>
+    </ul>
+  </div>
+)}
+
 
         <button 
           type="submit"
