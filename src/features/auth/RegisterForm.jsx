@@ -6,13 +6,22 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await registerUser(form);
-      alert('Rejestracja udana: ' + res.message);
-    } catch (err) {
-      console.error(err);
-      alert('Błąd rejestracji');
-    }
+   try {
+  const res = await registerUser(form);
+  alert("Rejestracja udana: " + res.message);
+} catch (err) {
+  console.log("Błąd:", err);
+
+  console.log("response:", err.response);
+  console.log("data:", err.response?.data);
+
+  if (err.response?.data?.message) {
+    alert("Błąd: " + err.response.data.message);
+  } else {
+    alert("Nieznany błąd");
+  }
+}
+
   };
 
   return (
