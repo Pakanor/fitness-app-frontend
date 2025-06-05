@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { addProductLog } from '../API/productAPI';
-
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+  Typography,
+  CircularProgress,
+  Paper,
+} from '@mui/material';
 function AddProductForm() {
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState([]);
@@ -92,17 +102,10 @@ const data = await response.json();
     const nutriments = await response.json();
 
 
-      const result = await addProductLog({
-        productName: selectedProduct.productName,
-        brands: selectedProduct.brands || 'Nieznana',
-        code: selectedProduct.code,
-        grams: parseFloat(grams),
-        nutriments: nutriments
-      });
+      await addProductLog(selectedProduct, grams, nutriments);
+
       console.log('Wysyłany produkt:', selectedProduct);
 
-      setMessage(result);
-      // Czyścimy formularz
       setSearchTerm('');
       setSelectedProduct(null);
       setGrams('');
@@ -120,143 +123,207 @@ const data = await response.json();
     setProducts([]);
   };
 
-  return (
-    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-      <h2>Dodaj nowy produkt</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Wyszukaj produkt:</label>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (!e.target.value || e.target.value !== selectedProduct?.productName) {
-                setSelectedProduct(null);
-              }
-            }}
-            placeholder="Wpisz nazwę produktu (min. 3 znaki)..."
-            style={{ width: '100%', padding: '8px' }}
-          />
-          
-          {isSearching && <p style={{ margin: '5px 0' }}>Wyszukiwanie...</p>}
-          
-          {products.length > 0 && !isSearching && (
-            <ul style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: '5px 0',
+   return (
+    <Box sx={{ maxWidth: 500, mx: 'auto', p: 2 }}>
+      <Typography variant="h5" mb={2}>
+        Dodaj nowy produkt
+      </Typography>
+      <form onSubmit={handleSubmit} noValidate>
+        <TextField
+          fullWidth
+          label="Wyszukaj produkt"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            if (!e.target.value || e.target.value !== selectedProduct?.productName) {
+              setSelectedProduct(null);
+            }
+          }}
+          placeholder="Wpisz nazwę produktu (min. 3 znaki)..."
+          margin="normal"
+          autoComplete="off"
+        />
+
+        {isSearching && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+
+        {products.length > 0 && !isSearching && (
+          <Paper
+            sx={{
+              maxHeight: 200,
+              overflowY: 'auto',
+              mt: 1,
               border: '1px solid #ddd',
-              borderRadius: '4px',
-              maxHeight: '200px',
-              overflowY: 'auto'
-            }}>
+            }}
+          >
+            <List disablePadding>
               {products.map((product, index) => (
-                <li 
+                <ListItem
+                  button
                   key={product.code || index}
                   onClick={() => handleProductSelect(product)}
-                  style={{
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: '#f9f9f9',
-                    borderBottom: '1px solid #eee',
-                    transition: 'background-color 0.2s'
+                  sx={{
+                    bgcolor: 'background.paper',
+                    '&:hover': {
+                      bgcolor: 'grey.100',
+                    },
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#f9f9f9'}
                 >
-                  <strong>{product.productName || 'Nazwa nieznana'}</strong>
-                  {product.brands && <div>Marka: {product.brands}</div>}
-                  {product.code && <div>Kod: {product.code}</div>}
-                </li>
+                  <ListItemText
+                    primary={product.productName || 'Nazwa nieznana'}
+                    secondary={
+                      <>
+                        {product.brands && `Marka: ${product.brands} `}
+                        {product.code && `Kod: ${product.code}`}
+                      </>
+                    }
+                  />
+                </ListItem>
               ))}
-            </ul>
-          )}
-        </div>
-        
-        {selectedProduct && (
-          <div style={{
-            margin: '15px 0',
-            padding: '10px',
-            backgroundColor: '#f0f8ff',
-            borderRadius: '4px',
-            borderLeft: '4px solid #4285f4'
-          }}>
-            <h3 style={{ marginTop: 0 }}>Wybrany produkt:</h3>
-            <p><strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}</p>
-            {selectedProduct.brands && <p><strong>Marka:</strong> {selectedProduct.brands}</p>}
-            {selectedProduct.code && <p><strong>Kod kreskowy:</strong> {selectedProduct.code}</p>}
-            {selectedProduct.nutriments && (
-      <div style={{ marginTop: '10px' }}>
-        <h4>Wartości odżywcze (na 100g):</h4>
-        <ul style={{ paddingLeft: '20px' }}>
-          <li><strong>Kalorie:</strong> {selectedProduct.nutriments.energy} {selectedProduct.nutriments.energyUnit}</li>
-          <li><strong>Białko:</strong> {selectedProduct.nutriments.proteins} g</li>
-          <li><strong>Tłuszcz:</strong> {selectedProduct.nutriments.fat} g</li>
-          <li><strong>Węglowodany:</strong> {selectedProduct.nutriments.carbs} g</li>
-          <li><strong>Sól:</strong> {selectedProduct.nutriments.salt} g</li>
-        </ul>
-      </div>
-    )}
-          </div>
+            </List>
+          </Paper>
         )}
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Waga (gramy):</label>
-          <input
-            type="number"
-            value={grams}
-            onChange={(e) => setGrams(e.target.value)}
-            required
-            min="1"
-            step="1"
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-       {calculatedNutriments && (
-  <div style={{ marginTop: '10px' }}>
-    <h4>Wartości odżywcze (dla {grams}g):</h4>
-    <ul style={{ paddingLeft: '20px' }}>
-      <li><strong>Kalorie:</strong> {calculatedNutriments.energy} {calculatedNutriments.energyUnit}</li>
-      <li><strong>Białko:</strong> {calculatedNutriments.proteins} g</li>
-      <li><strong>Tłuszcz:</strong> {calculatedNutriments.fat} g</li>
-      <li><strong>Węglowodany:</strong> {calculatedNutriments.carbs} g</li>
-      <li><strong>Sól:</strong> {calculatedNutriments.salt} g</li>
-    </ul>
-  </div>
+<TextField
+          type="number"
+          label="Waga (gramy)"
+          value={grams}
+          onChange={(e) => setGrams(e.target.value)}
+          required
+          inputProps={{ min: 1, step: 1 }}
+          fullWidth
+          margin="normal"
+        />
+        {(selectedProduct || calculatedNutriments) && (
+  <Box
+  mt={3}
+  sx={{
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 3,
+    alignItems: 'flex-start',
+    width: '100%',
+    minWidth: 500, 
+  }}
+>
+    {selectedProduct && (
+      <Paper
+        variant="outlined"
+        sx={{
+          flex: 1,
+          minWidth: 250,
+          p: 2,
+          borderLeft: '5px solid #1976d2',
+          backgroundColor: '#e3f2fd',
+        }}
+      >
+        <Typography variant="h6" mb={1}>
+          Wybrany produkt:
+        </Typography>
+        <Typography>
+          <strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}
+        </Typography>
+        {selectedProduct.brands && (
+          <Typography>
+            <strong>Marka:</strong> {selectedProduct.brands}
+          </Typography>
+        )}
+        {selectedProduct.code && (
+          <Typography>
+            <strong>Kod kreskowy:</strong> {selectedProduct.code}
+          </Typography>
+        )}
+        {selectedProduct.nutriments && (
+          <Box mt={1}>
+            <Typography variant="subtitle1">Wartości odżywcze (na 100g):</Typography>
+            <ul>
+              <li>
+                <strong>Kalorie:</strong> {selectedProduct.nutriments.energy}{' '}
+                {selectedProduct.nutriments.energyUnit}
+              </li>
+              <li>
+                <strong>Białko:</strong> {selectedProduct.nutriments.proteins} g
+              </li>
+              <li>
+                <strong>Tłuszcz:</strong> {selectedProduct.nutriments.fat} g
+              </li>
+              <li>
+                <strong>Węglowodany:</strong> {selectedProduct.nutriments.carbs} g
+              </li>
+              <li>
+                <strong>Sól:</strong> {selectedProduct.nutriments.salt} g
+              </li>
+            </ul>
+          </Box>
+        )}
+      </Paper>
+    )}
+
+    {calculatedNutriments && (
+      <Paper
+        variant="outlined"
+        sx={{
+          flex: 1,
+          minWidth: 250,
+          p: 2,
+          borderLeft: '5px solid #43a047',
+          backgroundColor: '#e8f5e9',
+        }}
+      >
+        <Typography variant="subtitle1" gutterBottom>
+          Wartości odżywcze (dla {grams}g):
+        </Typography>
+        <ul>
+          <li>
+            <strong>Kalorie:</strong> {calculatedNutriments.energy} {calculatedNutriments.energyUnit}
+          </li>
+          <li>
+            <strong>Białko:</strong> {calculatedNutriments.proteins} g
+          </li>
+          <li>
+            <strong>Tłuszcz:</strong> {calculatedNutriments.fat} g
+          </li>
+          <li>
+            <strong>Węglowodany:</strong> {calculatedNutriments.carbs} g
+          </li>
+          <li>
+            <strong>Sól:</strong> {calculatedNutriments.salt} g
+          </li>
+        </ul>
+      </Paper>
+    )}
+  </Box>
 )}
 
 
-        <button 
+        <Button
           type="submit"
-          style={{
-            backgroundColor: '#4285f4',
-            color: 'white',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
+          variant="contained"
+          color="primary"
           disabled={!selectedProduct || !grams}
+          sx={{ mt: 3 }}
+          fullWidth
         >
           Dodaj produkt
-        </button>
-        
+        </Button>
+
         {message && (
-          <p style={{
-            marginTop: '15px',
-            padding: '10px',
-            backgroundColor: message.includes('Błąd') ? '#ffebee' : '#e8f5e9',
-            color: message.includes('Błąd') ? '#c62828' : '#2e7d32',
-            borderRadius: '4px'
-          }}>
+          <Box
+            mt={2}
+            p={2}
+            sx={{
+              borderRadius: 1,
+              bgcolor: message.includes('Błąd') ? 'error.light' : 'success.light',
+              color: message.includes('Błąd') ? 'error.main' : 'success.main',
+            }}
+          >
             {message}
-          </p>
+          </Box>
         )}
       </form>
-    </div>
+    </Box>
   );
 }
-
 export default AddProductForm;

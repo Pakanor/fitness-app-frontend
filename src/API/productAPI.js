@@ -30,20 +30,36 @@ export async function searchProducts(query) {
   return await res.json();
 }
 
-export async function addProductLog(product, grams) {
-  const res = await fetch(`${API_URL}/add`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      product: {
-        productName: product.product_name || product.productName,
-        brands: product.brands || 'Nieznana',
-        code: product.code || null
-      },
-      grams: parseFloat(grams)
-    }),
+export async function addProductLog(product, grams, nutriments) {
+  const body = {
+    product: {
+      productName: product.productName,
+      brands: product.brands,
+      nutriments: {
+        energy: nutriments.energy,
+  energyUnit: nutriments.energyUnit ?? "kJ", 
+        fat: nutriments.fat,
+        carbohydrates: nutriments.carbs,          
+        proteins: nutriments.proteins,
+        salt: nutriments.salt
+      }
+    },
+    grams: parseFloat(grams)
+  };
+
+  console.log("Payload wysyłany do /add:", body);
+
+  const res = await fetch("http://localhost:5142/api/ProductsOperation/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
   });
-  if (!res.ok) throw new Error('Błąd dodawania produktu');
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Błąd dodawania produktu:", errorText);
+    throw new Error("Błąd dodawania produktu");
+  }
+
   return await res.text();
 }
-
