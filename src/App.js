@@ -2,7 +2,10 @@ import React from 'react';
 import AddProductForm from './components/AddProductForm';
 import ProductList from './components/ProductList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RegisterForm from './pages/RegisterPage'; // zakładam, że tu jest twój komponent
+import RegisterForm from './pages/RegisterPage'; 
+import ProductPage from './pages/ProductPage';
+import CalorieTracer from './pages/CalorieTracer';
+
 
 
 function App() {
@@ -10,6 +13,11 @@ function App() {
      <Router>
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/add" element={<ProductPage />} />
+                <Route path="/calorie-tracker" element={<CalorieTracer />} />
+
+
+
         {/* możesz dodać więcej tras, np. */}
         {/* <Route path="/login" element={<LoginForm />} /> */}
       </Routes>

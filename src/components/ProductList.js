@@ -32,6 +32,10 @@ function ProductList() {
           </li>
         ))}
       </ul>
+
+      <div>
+        <a href="/add">Dodaj nowy produkt</a>
+      </div>
     </div>
   );
 }
