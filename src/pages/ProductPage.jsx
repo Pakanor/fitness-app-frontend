@@ -1,6 +1,6 @@
 import React from 'react';
-import AddProductForm from '../components/AddProductForm'; 
 import Header from '../components/Header'; 
+import ProductForm from '../components/ProductForm';
 
 
 const RegisterPage = () => {
@@ -8,7 +8,7 @@ const RegisterPage = () => {
     <div>
                     <Header />
 
-      <AddProductForm />
+      <ProductForm />
 
 
     </div>

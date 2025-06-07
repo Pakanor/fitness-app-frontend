@@ -23,7 +23,6 @@ export async function updateProductLog(updatedEntry) {
   return await res.text();
 }
 
-// Nowe lub zaktualizowane funkcje dla wyszukiwania i dodawania produktów
 export async function searchProducts(query) {
   const res = await fetch(`${API_URL}/search?query=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('Błąd wyszukiwania produktów');

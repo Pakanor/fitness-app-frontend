@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addProductLog } from '../API/productAPI';
+import { addProductLog,updateProductLog } from '../API/productAPI';
 import {
   Box,
   Button,
@@ -11,7 +11,7 @@ import {
   CircularProgress,
   Paper,
 } from '@mui/material';
-function AddProductForm() {
+function ProductForm({ mode = 'add', initialData = null, onSuccess }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -19,6 +19,34 @@ function AddProductForm() {
   const [message, setMessage] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [calculatedNutriments, setCalculatedNutriments] = useState(null);
+  useEffect(() => {
+if (mode === 'edit' && initialData) {
+  const fakeProduct = {
+    ...initialData,
+    nutriments: {
+      energy: initialData.energy,
+      fat: initialData.fat,
+      proteins: initialData.proteins,
+      carbs: initialData.carbs ?? 0,
+      sugars: initialData.sugars,
+      salt: initialData.salt,
+      energyUnit: initialData.energyUnit,
+    }
+  };
+
+  setSelectedProduct(fakeProduct);
+  setGrams(initialData.grams);
+  setCalculatedNutriments({
+    energy: initialData.energy,
+    fat: initialData.fat,
+    proteins: initialData.proteins,
+    carbs: initialData.carbs ?? 0,
+    sugars: initialData.sugars,
+    salt: initialData.salt,
+    energyUnit: initialData.energyUnit,
+  });
+}
+}, [mode, initialData]);
 useEffect(() => {
   const fetchNutriments = async () => {
     if (selectedProduct && grams && !isNaN(grams)) {
@@ -78,44 +106,61 @@ const data = await response.json();
     const timer = setTimeout(searchProducts, 1000);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  if (!selectedProduct || !grams) {
+    setMessage('Wybierz produkt i podaj wagę');
+    return;
+  }
 
-    if (!selectedProduct || !grams) {
-      setMessage('Wybierz produkt i podaj wagę');
-      return;
-    }
-
-    try {
- const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
+  try {
+    const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         product: selectedProduct,
-        grams: parseFloat(grams)})})
-        if (!response.ok) {
+        grams: parseFloat(grams),
+      }),
+    });
+
+    if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Błąd kalkulatora: ${errorText}`);
     }
 
     const nutriments = await response.json();
 
-
+    if (mode === 'add') {
       await addProductLog(selectedProduct, grams, nutriments);
+      alert("Produkt dodano!");
+    } else {
+      await updateProductLog({
+  ...initialData,
+  grams: parseFloat(grams),
+  energy: nutriments.energy,
+  fat: nutriments.fat,
+  sugars: nutriments.sugars,
+  proteins: nutriments.proteins,
+  salt: nutriments.salt,
+  energyUnit: nutriments.energyUnit,
+});
+      alert("Produkt zaktualizowano!");
+    }
 
-      console.log('Wysyłany produkt:', selectedProduct);
+    if (onSuccess) onSuccess();
 
+    if (mode === 'add') {
       setSearchTerm('');
       setSelectedProduct(null);
       setGrams('');
       setProducts([]);
-    } catch (error) {
-      setMessage('Błąd podczas dodawania produktu');
-      
-      console.error(error);
     }
-  };
+  } catch (error) {
+    setMessage('Błąd podczas zapisu produktu');
+    console.error(error);
+  }
+};
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -126,23 +171,25 @@ const data = await response.json();
    return (
     <Box sx={{ maxWidth: 500, mx: 'auto', p: 2 }}>
       <Typography variant="h5" mb={2}>
-        Dodaj nowy produkt
-      </Typography>
+  {mode === 'add' ? 'Dodaj nowy produkt' : 'Edytuj produkt'}
+</Typography>
       <form onSubmit={handleSubmit} noValidate>
-        <TextField
-          fullWidth
-          label="Wyszukaj produkt"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            if (!e.target.value || e.target.value !== selectedProduct?.productName) {
-              setSelectedProduct(null);
-            }
-          }}
-          placeholder="Wpisz nazwę produktu (min. 3 znaki)..."
-          margin="normal"
-          autoComplete="off"
-        />
+       {mode === 'add' && (
+  <TextField
+    fullWidth
+    label="Wyszukaj produkt"
+    value={searchTerm}
+    onChange={(e) => {
+      setSearchTerm(e.target.value);
+      if (!e.target.value || e.target.value !== selectedProduct?.productName) {
+        setSelectedProduct(null);
+      }
+    }}
+    placeholder="Wpisz nazwę produktu (min. 3 znaki)..."
+    margin="normal"
+    autoComplete="off"
+  />
+)}
 
         {isSearching && (
           <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
@@ -224,6 +271,7 @@ const data = await response.json();
         </Typography>
         <Typography>
           <strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}
+          
         </Typography>
         {selectedProduct.brands && (
           <Typography>
@@ -299,15 +347,15 @@ const data = await response.json();
 
 
         <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={!selectedProduct || !grams}
-          sx={{ mt: 3 }}
-          fullWidth
-        >
-          Dodaj produkt
-        </Button>
+  type="submit"
+  variant="contained"
+  color="primary"
+  disabled={!selectedProduct || !grams}
+  sx={{ mt: 3 }}
+  fullWidth
+>
+  {mode === 'add' ? 'Dodaj produkt' : 'Zapisz zmiany'}
+</Button>
 
         {message && (
           <Box
@@ -326,4 +374,4 @@ const data = await response.json();
     </Box>
   );
 }
-export default AddProductForm;
+export default ProductForm;
