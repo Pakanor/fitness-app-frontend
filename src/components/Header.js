@@ -49,7 +49,7 @@ function Header() {
           >
             <Button color="inherit" href="/">Strona główna</Button>
             <Button color="inherit" href="/exercises">Ćwiczenia</Button>
-            <Button color="inherit" href="/calorie-counter">Licznik kalorii</Button>
+            <Button color="inherit" href="/calorie-tracker">Licznik kalorii</Button>
 
             <Button
               color="inherit"

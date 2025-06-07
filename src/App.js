@@ -1,5 +1,4 @@
 import React from 'react';
-import AddProductForm from './components/AddProductForm';
 import ProductList from './components/ProductList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RegisterForm from './pages/RegisterPage'; 
@@ -18,8 +17,7 @@ function App() {
 
 
 
-        {/* możesz dodać więcej tras, np. */}
-        {/* <Route path="/login" element={<LoginForm />} /> */}
+      
       </Routes>
     </Router>
   );
