@@ -3,7 +3,7 @@ import { Modal, Box, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ProductForm from './ProductForm';
 
-function EditProductModal({ product, mode, onClose, onUpdated }) {
+function ProductModal({ product, mode, onClose, onUpdated }) {
   return (
     <Modal open={true} onClose={onClose} aria-labelledby="modal-title">
       <Box
@@ -42,4 +42,4 @@ function EditProductModal({ product, mode, onClose, onUpdated }) {
   );
 }
 
-export default EditProductModal;
+export default ProductModal;
