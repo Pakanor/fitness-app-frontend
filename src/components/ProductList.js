@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, Button, Link, Stack } from '@mui/material';
-import EditProductModal from './EditProductModal'; // importuj swój komponent modala
+import ProductModal from './ProductModal'; // importuj swój komponent modala
 
 function ProductList({ logs, onDelete, onProductUpdated }) {
   const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | null
@@ -55,12 +55,13 @@ function ProductList({ logs, onDelete, onProductUpdated }) {
           >
             <Typography variant="subtitle1">{log.productName}</Typography>
             <Typography variant="subtitle1">{log.grams}</Typography>
+                        <Typography variant="subtitle1">{log.energy}</Typography>
+
 
             <Typography variant="body2" color="text.secondary" mb={1}>
               {log.brands}
             </Typography>
             <Stack direction="row" spacing={1}>
-              {/* Tu zmiana: używaj openEditModal */}
               <Button variant="outlined" color="primary" onClick={() => openEditModal(log)}>
                 Edytuj
               </Button>
@@ -78,9 +79,8 @@ function ProductList({ logs, onDelete, onProductUpdated }) {
         </Button>
       </Box>
 
-      {/* Modal pokazuj, gdy modalMode jest ustawione */}
       {modalMode && (
-        <EditProductModal
+        <ProductModal
           mode={modalMode}
           product={selectedProduct}
           onClose={handleModalClose}

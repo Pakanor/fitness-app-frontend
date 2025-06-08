@@ -266,46 +266,61 @@ const handleSubmit = async (e) => {
           backgroundColor: '#e3f2fd',
         }}
       >
-        <Typography variant="h6" mb={1}>
-          Wybrany produkt:
-        </Typography>
-        <Typography>
-          <strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}
-          
-        </Typography>
-        {selectedProduct.brands && (
-          <Typography>
-            <strong>Marka:</strong> {selectedProduct.brands}
-          </Typography>
-        )}
-        {selectedProduct.code && (
-          <Typography>
-            <strong>Kod kreskowy:</strong> {selectedProduct.code}
-          </Typography>
-        )}
-        {selectedProduct.nutriments && (
-          <Box mt={1}>
-            <Typography variant="subtitle1">Wartości odżywcze (na 100g):</Typography>
-            <ul>
-              <li>
-                <strong>Kalorie:</strong> {selectedProduct.nutriments.energy}{' '}
-                {selectedProduct.nutriments.energyUnit}
-              </li>
-              <li>
-                <strong>Białko:</strong> {selectedProduct.nutriments.proteins} g
-              </li>
-              <li>
-                <strong>Tłuszcz:</strong> {selectedProduct.nutriments.fat} g
-              </li>
-              <li>
-                <strong>Węglowodany:</strong> {selectedProduct.nutriments.carbs} g
-              </li>
-              <li>
-                <strong>Sól:</strong> {selectedProduct.nutriments.salt} g
-              </li>
-            </ul>
-          </Box>
-        )}
+    <Typography variant="h6" mb={1}>
+  Wybrany produkt:
+</Typography>
+<Typography>
+  <strong>Nazwa:</strong> {selectedProduct.productName || 'Nazwa nieznana'}
+</Typography>
+{selectedProduct.brands && (
+  <Typography>
+    <strong>Marka:</strong> {selectedProduct.brands}
+  </Typography>
+)}
+{selectedProduct.code && (
+  <Typography>
+    <strong>Kod kreskowy:</strong> {selectedProduct.code}
+  </Typography>
+)}
+{selectedProduct.nutriments && (
+  <Box mt={1}>
+    <Typography variant="subtitle1">Wartości odżywcze (na 100g):</Typography>
+    <ul>
+      <li>
+        <strong>Kalorie:</strong>{' '}
+        {selectedProduct.nutriments.energy
+          ? Math.round(selectedProduct.nutriments.energy)
+          : 'Brak danych'}{' '}
+        {selectedProduct.nutriments.energyUnit || ''}
+      </li>
+      <li>
+        <strong>Białko:</strong>{' '}
+        {selectedProduct.nutriments.proteins != null
+          ? parseFloat(selectedProduct.nutriments.proteins.toFixed(1))
+          : 'Brak danych'} g
+      </li>
+      <li>
+        <strong>Tłuszcz:</strong>{' '}
+        {selectedProduct.nutriments.fat != null
+          ? parseFloat(selectedProduct.nutriments.fat.toFixed(1))
+          : 'Brak danych'} g
+      </li>
+      <li>
+        <strong>Węglowodany:</strong>{' '}
+        {selectedProduct.nutriments.carbs != null
+          ? parseFloat(selectedProduct.nutriments.carbs.toFixed(1))
+          : 'Brak danych'} g
+      </li>
+      <li>
+        <strong>Sól:</strong>{' '}
+        {selectedProduct.nutriments.salt != null
+          ? parseFloat(selectedProduct.nutriments.salt.toFixed(1))
+          : 'Brak danych'} g
+      </li>
+    </ul>
+  </Box>
+)}
+
       </Paper>
     )}
 
