@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, Button, Link, Stack } from '@mui/material';
-import ProductModal from './ProductModal'; // importuj swój komponent modala
+import ProductModal from './ProductModal'; 
 
-function ProductList({ logs, onDelete, onProductUpdated }) {
+function ProductItem({ logs=[], onDelete, onProductUpdated }) {
   const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | null
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -92,4 +92,4 @@ function ProductList({ logs, onDelete, onProductUpdated }) {
 }
 
 
-export default ProductList;
+export default ProductItem;
