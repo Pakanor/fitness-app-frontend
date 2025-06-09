@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, List, ListItem, Button, Link, Stack } from '@mui/material';
-import ProductModal from './ProductModal'; 
+import { Box, Typography, List, ListItem, Button, Stack } from '@mui/material';
+import ProductModal from '../../components/ProductModal'; 
 
 function ProductItem({ logs=[], onDelete, onProductUpdated }) {
   const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | null
@@ -50,26 +50,33 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
       >
         {logs.map((log) => (
           <ListItem
-            key={log.id}
-            sx={{ flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}
-          >
-            <Typography variant="subtitle1">{log.productName}</Typography>
-            <Typography variant="subtitle1">{log.grams}</Typography>
-                        <Typography variant="subtitle1">{log.energy}</Typography>
+  key={log.id}
+  sx={{ flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}
+>
+  <Typography variant="subtitle1" fontWeight="bold">{log.productName}</Typography>
+  <Typography variant="body2">Ilość: {log.grams} g</Typography>
+  <Typography variant="body2">
+    Energia: {log.energy} {log.energyUnit || 'kcal'}
+  </Typography>
+  <Typography variant="body2">Tłuszcze: {log.fat} g</Typography>
+  <Typography variant="body2">Węglowodany: {log.sugars} g</Typography>
+  <Typography variant="body2">Białko: {log.proteins} g</Typography>
+  
 
+  <Typography variant="body2" color="text.secondary" mb={1}>
+    {log.brands}
+  </Typography>
 
-            <Typography variant="body2" color="text.secondary" mb={1}>
-              {log.brands}
-            </Typography>
-            <Stack direction="row" spacing={1}>
-              <Button variant="outlined" color="primary" onClick={() => openEditModal(log)}>
-                Edytuj
-              </Button>
-              <Button variant="outlined" color="error" onClick={() => onDelete(log.id)}>
-                Usuń
-              </Button>
-            </Stack>
-          </ListItem>
+  <Stack direction="row" spacing={1}>
+    <Button variant="outlined" color="primary" onClick={() => openEditModal(log)}>
+      Edytuj
+    </Button>
+    <Button variant="outlined" color="error" onClick={() => onDelete(log.id)}>
+      Usuń
+    </Button>
+  </Stack>
+</ListItem>
+
         ))}
       </List>
 

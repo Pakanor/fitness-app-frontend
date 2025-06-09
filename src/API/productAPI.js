@@ -1,6 +1,5 @@
 const API_URL = 'http://localhost:5142/api/ProductsOperation';
 
-// Istniejące funkcje (zachowane bez zmian)
 export async function getRecentLogs(date = null) {
   const url = date ? `${API_URL}/recent?date=${date}` : `${API_URL}/recent`;
   const res = await fetch(url);
@@ -38,7 +37,7 @@ export async function addProductLog(product, grams, nutriments) {
         energy: nutriments.energy,
   energyUnit: nutriments.energyUnit ?? "kJ", 
         fat: nutriments.fat,
-        carbohydrates: nutriments.carbs,          
+        carbs: nutriments.carbs,          
         proteins: nutriments.proteins,
         salt: nutriments.salt
       }

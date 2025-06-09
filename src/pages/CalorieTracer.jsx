@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import ProductList from '../components/ProductItem';
-import ProductForm from '../components/ProductForm';
+import ProductItem from '../features/products/ProductItem';
+import ProductForm from '../features/products/ProductForm';
 import { getRecentLogs, deleteProductLog } from '../API/productAPI';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 const RegisterPage = () => {
   const [logs, setLogs] = useState([]);
@@ -14,7 +14,7 @@ const RegisterPage = () => {
     try {
       const data = await getRecentLogs();
       console.log('Odebrane logi:', data);
-      setLogs(Array.isArray(data) ? data : []); // zabezpieczenie
+      setLogs(Array.isArray(data) ? data : []); 
     } catch (err) {
       console.error('Błąd pobierania:', err);
     } finally {
@@ -54,7 +54,7 @@ const RegisterPage = () => {
         ) : (
           <>
            
-            <ProductList
+            <ProductItem
               logs={logs}
               onDelete={handleDelete}
               onProductUpdated={fetchLogs}
