@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Box, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import ProductForm from './ProductForm';
+import ProductForm from '../features/products/ProductForm';
 
 function ProductModal({ product, mode, onClose, onUpdated }) {
   return (
@@ -16,7 +16,7 @@ function ProductModal({ product, mode, onClose, onUpdated }) {
           boxShadow: 24,
           p: 4,
           width: 600,
-          maxHeight: '90vh',
+          maxHeight: '85vh',
           overflowY: 'auto',
           borderRadius: 2,
         }}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
 
 function HideOnScroll(props) {
@@ -13,23 +13,19 @@ function HideOnScroll(props) {
 }
 
 function Header() {
-  const [menuOpen, setMenuOpen] = useState(false); // hamburger menu na mobilki
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null); // anchor dla konta
+  const [menuOpen, setMenuOpen] = useState(false); 
+  const [accountAnchorEl, setAccountAnchorEl] = useState(null); 
 
-  // Toggle hamburger menu
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  // Otwieranie menu konta
   const handleAccountClick = (event) => {
     setAccountAnchorEl(event.currentTarget);
   };
 
-  // Zamknięcie menu konta
   const handleAccountClose = () => {
     setAccountAnchorEl(null);
   };
 
-  const isMenuOpen = Boolean(menuOpen);
   const isAccountMenuOpen = Boolean(accountAnchorEl);
 
   return (
@@ -84,7 +80,6 @@ function Header() {
                 onClick={() => {
                   handleAccountClose();
                   alert('Wylogowano');
-                  // Tutaj dodaj swoją logikę wylogowania
                 }}
               >
                 Wyloguj się

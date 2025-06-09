@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { addProductLog,updateProductLog } from '../API/productAPI';
+import { addProductLog,updateProductLog } from '../../API/productAPI';
+
 import {
   Box,
   Button,
@@ -19,20 +20,23 @@ function ProductForm({ mode = 'add', initialData = null, onSuccess }) {
   const [message, setMessage] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [calculatedNutriments, setCalculatedNutriments] = useState(null);
+  
   useEffect(() => {
 if (mode === 'edit' && initialData) {
-  const fakeProduct = {
-    ...initialData,
-    nutriments: {
-      energy: initialData.energy,
-      fat: initialData.fat,
-      proteins: initialData.proteins,
-      carbs: initialData.carbs ?? 0,
-      sugars: initialData.sugars,
-      salt: initialData.salt,
-      energyUnit: initialData.energyUnit,
-    }
-  };
+ const gramsFromInitial = initialData.grams || 100;
+const nutrimentsOn100g = {
+  energy: initialData.energy * 100 / gramsFromInitial,
+  fat: initialData.fat * 100 / gramsFromInitial,
+  proteins: initialData.proteins * 100 / gramsFromInitial,
+  carbs: (initialData.carbohydrates ?? initialData.carbs ?? 0) * 100 / gramsFromInitial,
+  salt: initialData.salt * 100 / gramsFromInitial,
+  energyUnit: initialData.energyUnit,
+};
+
+const fakeProduct = {
+  ...initialData,
+  nutriments: nutrimentsOn100g,
+};
 
   setSelectedProduct(fakeProduct);
   setGrams(initialData.grams);
@@ -49,32 +53,32 @@ if (mode === 'edit' && initialData) {
 }, [mode, initialData]);
 useEffect(() => {
   const fetchNutriments = async () => {
-    if (selectedProduct && grams && !isNaN(grams)) {
-      try {
-        const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            product: selectedProduct,
-            grams: parseFloat(grams)
-          })
-        });
+  if (selectedProduct && grams && !isNaN(grams)) {
+    try {
+      const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product: selectedProduct,  // <-- przesyłasz wybrany produkt
+          grams: parseFloat(grams)
+        })
+      });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Błąd kalkulatora: ${errorText}`);
-        }
-
-        const result = await response.json();
-        setCalculatedNutriments(result);
-      } catch (error) {
-        console.error('Błąd przeliczania wartości odżywczych:', error);
-        setCalculatedNutriments(null);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Błąd kalkulatora: ${errorText}`);
       }
-    } else {
+
+      const result = await response.json();
+      setCalculatedNutriments(result);  // <-- ustawiasz wynik w stanie
+    } catch (error) {
+      console.error('Błąd przeliczania wartości odżywczych:', error);
       setCalculatedNutriments(null);
     }
-  };
+  } else {
+    setCalculatedNutriments(null);
+  }
+};
 
   fetchNutriments();
 }, [grams, selectedProduct]);
@@ -87,7 +91,7 @@ useEffect(() => {
         try {
           const response = await fetch(`http://localhost:5142/api/ProductsOperation/search?query=${encodeURIComponent(searchTerm)}`);
           if (!response.ok) {
-  const text = await response.text(); // pokaż HTML/treść błędu
+  const text = await response.text();
   throw new Error(`Błąd HTTP ${response.status}: ${text}`);
 }
 const data = await response.json();
@@ -114,41 +118,31 @@ const handleSubmit = async (e) => {
     return;
   }
 
+  const nutriments = calculatedNutriments;
+  if (!nutriments) {
+    setMessage('Błąd: brak danych odżywczych');
+    return;
+  }
+
   try {
-    const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        product: selectedProduct,
-        grams: parseFloat(grams),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Błąd kalkulatora: ${errorText}`);
-    }
-
-    const nutriments = await response.json();
-
     if (mode === 'add') {
-      await addProductLog(selectedProduct, grams, nutriments);
+      await addProductLog(selectedProduct, grams, selectedProduct.nutriments);
       alert("Produkt dodano!");
     } else {
       await updateProductLog({
-  ...initialData,
-  grams: parseFloat(grams),
-  energy: nutriments.energy,
-  fat: nutriments.fat,
-  sugars: nutriments.sugars,
-  proteins: nutriments.proteins,
-  salt: nutriments.salt,
-  energyUnit: nutriments.energyUnit,
-});
+        ...initialData,
+        grams: parseFloat(grams),
+        energy: nutriments.energy,
+        fat: nutriments.fat,
+        sugars: nutriments.sugars,
+        proteins: nutriments.proteins,
+        salt: nutriments.salt, // tu wcześniej był błąd: było sugars zamiast salt
+        energyUnit: nutriments.energyUnit,
+      });
       alert("Produkt zaktualizowano!");
     }
 
-    if (onSuccess) onSuccess();
+    onSuccess();
 
     if (mode === 'add') {
       setSearchTerm('');
@@ -161,6 +155,7 @@ const handleSubmit = async (e) => {
     console.error(error);
   }
 };
+
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -351,9 +346,7 @@ const handleSubmit = async (e) => {
           <li>
             <strong>Węglowodany:</strong> {calculatedNutriments.carbs} g
           </li>
-          <li>
-            <strong>Sól:</strong> {calculatedNutriments.salt} g
-          </li>
+          
         </ul>
       </Paper>
     )}
