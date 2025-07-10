@@ -5,7 +5,7 @@ import ProductForm from '../features/products/ProductForm';
 import { getRecentLogs, deleteProductLog } from '../API/productAPI';
 import { Box, CircularProgress } from '@mui/material';
 
-const RegisterPage = () => {
+const CalorieTracer = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -66,4 +66,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default CalorieTracer;
