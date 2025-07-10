@@ -59,7 +59,7 @@ useEffect(() => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          product: selectedProduct,  // <-- przesyłasz wybrany produkt
+          product: selectedProduct,  
           grams: parseFloat(grams)
         })
       });
@@ -70,7 +70,7 @@ useEffect(() => {
       }
 
       const result = await response.json();
-      setCalculatedNutriments(result);  // <-- ustawiasz wynik w stanie
+      setCalculatedNutriments(result);  
     } catch (error) {
       console.error('Błąd przeliczania wartości odżywczych:', error);
       setCalculatedNutriments(null);
@@ -136,7 +136,7 @@ const handleSubmit = async (e) => {
         fat: nutriments.fat,
         sugars: nutriments.sugars,
         proteins: nutriments.proteins,
-        salt: nutriments.salt, // tu wcześniej był błąd: było sugars zamiast salt
+        salt: nutriments.salt, 
         energyUnit: nutriments.energyUnit,
       });
       alert("Produkt zaktualizowano!");
