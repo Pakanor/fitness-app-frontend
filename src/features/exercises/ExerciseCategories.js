@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { getExerciseCategory } from '../../API/exerciseAPI'; 
+import {
+  Grid,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 
 export function ExerciseCategories() {
   const [categories, setCategories] = useState([]);
@@ -11,15 +21,26 @@ export function ExerciseCategories() {
       .catch(err => setError(err.message));
   }, []);
 
-  if (error) return <div>Błąd: {error}</div>;
-  if (categories.length === 0) return <div>Ładowanie kategorii...</div>;
+  if (error) return <Alert severity="error">Błąd: {error}</Alert>;
+  if (categories.length === 0) return <CircularProgress />;
 
   return (
-    <ul>
+    <Grid container spacing={3} padding={3}>
       {categories.map(categoryName => (
-        <li key={categoryName}>{categoryName}</li>
+        <Grid item xs={12} sm={6} md={4} lg={3} key={categoryName}>
+          <Card>
+            <CardActionArea component={Link} to={`/exercise/${encodeURIComponent(categoryName)}`}>
+              <CardContent>
+                <Typography variant="h6" align="center">
+                  {categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
       ))}
-    </ul>
+    </Grid>
   );
 }
+
 export default ExerciseCategories;

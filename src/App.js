@@ -5,6 +5,7 @@ import CalorieTracer from './pages/CalorieTracer';
 import VerifyPage from './pages/VerifyPage';
 import HomePage from './pages/HomePage';
 import ExerciseStartPage from './pages/ExerciseStartPage';
+import ExerciseListPage from './pages/ExerciseListPage';
 
 
 
@@ -19,6 +20,8 @@ function App() {
                 <Route path="/calorie-tracker" element={<CalorieTracer />} />
                   <Route path="/verify" element={<VerifyPage />} />
         <Route path="/exercise-start" element={<ExerciseStartPage />} />
+              <Route path="/exercise/:bodyPart" element={<ExerciseListPage />} />
+
 
 
 
