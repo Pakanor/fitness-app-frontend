@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, Button, Stack } from '@mui/material';
 import ProductModal from '../../components/ProductModal'; 
+import DateSearch from '../../components/DateSearch';
+
 
 function ProductItem({ logs=[], onDelete, onProductUpdated }) {
-  const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | null
+  const [modalMode, setModalMode] = useState(null); 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const openEditModal = (product) => {
@@ -27,6 +29,7 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
   };
 
   return (
+
     <Box
       sx={{
         height: '85vh',
@@ -34,10 +37,13 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
         flexDirection: 'column',
         p: 2,
       }}
+      
     >
+<h2>Wyszukaj logi po dacie</h2>
       <Typography variant="h5" gutterBottom>
         Ostatnie produkty
       </Typography>
+<DateSearch onSearch={onProductUpdated} />
 
       <List
         sx={{
