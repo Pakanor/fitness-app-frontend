@@ -10,18 +10,17 @@ const CalorieTracer = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const fetchLogs = async () => {
-    try {
-      const data = await getRecentLogs();
-      console.log('Odebrane logi:', data);
-      setLogs(Array.isArray(data) ? data : []); 
-    } catch (err) {
-      console.error('Błąd pobierania:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
+  const fetchLogs = async (date = null) => {
+  try {
+    const data = await getRecentLogs(date); 
+    setLogs(Array.isArray(data) ? [...data] : []);
+  } catch (err) {
+    console.error('Błąd pobierania:', err);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchLogs();
   }, []);
@@ -58,6 +57,7 @@ const CalorieTracer = () => {
               logs={logs}
               onDelete={handleDelete}
               onProductUpdated={fetchLogs}
+
             />
           </>
         )}

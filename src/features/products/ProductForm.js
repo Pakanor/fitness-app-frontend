@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { addProductLog,updateProductLog } from '../../API/productAPI';
+import { addProductLog,updateProductLog,searchProducts ,calculated} from '../../API/productAPI';
+
 
 import {
   Box,
@@ -28,10 +29,11 @@ const nutrimentsOn100g = {
   energy: initialData.energy * 100 / gramsFromInitial,
   fat: initialData.fat * 100 / gramsFromInitial,
   proteins: initialData.proteins * 100 / gramsFromInitial,
-  carbs: (initialData.carbohydrates ?? initialData.carbs ?? 0) * 100 / gramsFromInitial,
+  carbs: initialData.sugars * 100 / gramsFromInitial,
   salt: initialData.salt * 100 / gramsFromInitial,
   energyUnit: initialData.energyUnit,
 };
+
 
 const fakeProduct = {
   ...initialData,
@@ -44,8 +46,7 @@ const fakeProduct = {
     energy: initialData.energy,
     fat: initialData.fat,
     proteins: initialData.proteins,
-    carbs: initialData.carbs ?? 0,
-    sugars: initialData.sugars,
+    carbs: initialData.sugars,
     salt: initialData.salt,
     energyUnit: initialData.energyUnit,
   });
@@ -55,21 +56,7 @@ useEffect(() => {
   const fetchNutriments = async () => {
   if (selectedProduct && grams && !isNaN(grams)) {
     try {
-      const response = await fetch('http://localhost:5142/api/CalorieCalculator/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product: selectedProduct,  
-          grams: parseFloat(grams)
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Błąd kalkulatora: ${errorText}`);
-      }
-
-      const result = await response.json();
+     const result = await calculated(selectedProduct, parseFloat(grams));
       setCalculatedNutriments(result);  
     } catch (error) {
       console.error('Błąd przeliczania wartości odżywczych:', error);
@@ -83,18 +70,12 @@ useEffect(() => {
   fetchNutriments();
 }, [grams, selectedProduct]);
 
-  // Wyszukiwanie produktów przy zmianie searchTerm
   useEffect(() => {
-    const searchProducts = async () => {
+    const searchProduct = async () => {
       if (searchTerm.length > 2) {
         setIsSearching(true);
         try {
-          const response = await fetch(`http://localhost:5142/api/ProductsOperation/search?query=${encodeURIComponent(searchTerm)}`);
-          if (!response.ok) {
-  const text = await response.text();
-  throw new Error(`Błąd HTTP ${response.status}: ${text}`);
-}
-const data = await response.json();
+          const data = await searchProducts(searchTerm);
           setProducts(data);
         } catch (error) {
           console.error('Błąd wyszukiwania:', error);
@@ -107,7 +88,7 @@ const data = await response.json();
       }
     };
 
-    const timer = setTimeout(searchProducts, 1000);
+    const timer = setTimeout(searchProduct, 1000);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 const handleSubmit = async (e) => {
@@ -134,7 +115,7 @@ const handleSubmit = async (e) => {
         grams: parseFloat(grams),
         energy: nutriments.energy,
         fat: nutriments.fat,
-        sugars: nutriments.sugars,
+        carbs: nutriments.carbohydrates ?? nutriments.carbs ?? 0,
         proteins: nutriments.proteins,
         salt: nutriments.salt, 
         energyUnit: nutriments.energyUnit,
