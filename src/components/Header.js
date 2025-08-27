@@ -80,6 +80,9 @@ function Header() {
                 onClick={() => {
                   handleAccountClose();
                   alert('Wylogowano');
+                  localStorage.removeItem("token");
+                  window.location.href = '/login';
+
                 }}
               >
                 Wyloguj się
@@ -163,7 +166,6 @@ function Header() {
               onClick={() => {
                 setMenuOpen(false);
                 alert('Wylogowano');
-                // Tutaj dodaj swoją logikę wylogowania
               }}
               sx={{ textAlign: 'left' }}
             >
