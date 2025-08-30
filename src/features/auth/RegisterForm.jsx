@@ -27,7 +27,6 @@ const RegisterForm = () => {
       setError(msg);
     }
   };
-
   return (
     <Box
       component="form"
@@ -77,6 +76,7 @@ const RegisterForm = () => {
         <Button type="submit" variant="contained" fullWidth>
           Zarejestruj się
         </Button>
+      
       </Stack>
     </Box>
   );
