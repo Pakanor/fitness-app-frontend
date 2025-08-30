@@ -1,10 +1,26 @@
 const API_URL = 'http://localhost:5000/api/ProductsOperation';
+const token = localStorage.getItem("token");
 
-export async function getRecentLogs(date =  new Date().toISOString().split("T")[0]) {
+
+export async function getRecentLogs(date = new Date().toISOString().split("T")[0]) {
+
   const url = date ? `${API_URL}/recent?date=${date}` : `${API_URL}/recent`;
-  const res = await fetch(url);
+
+  const res = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    console.error('Błąd pobierania:', res.status, res.statusText);
+    return []; 
+  }
+
   return await res.json();
 }
+
 
 export async function deleteProductLog(id) {
   const res = await fetch(`${API_URL}/delete/${id}`, { method: 'DELETE' });
@@ -49,8 +65,10 @@ export async function addProductLog(product, grams, nutriments) {
 
   const res = await fetch("http://localhost:5000/api/ProductsOperation/add", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`  
+  },    body: JSON.stringify(body)
   });
 
   if (!res.ok) {
