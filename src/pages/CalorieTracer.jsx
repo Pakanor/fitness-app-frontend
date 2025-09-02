@@ -4,17 +4,29 @@ import ProductItem from '../features/products/ProductItem';
 import ProductForm from '../features/products/ProductForm';
 import { getRecentLogs, deleteProductLog } from '../API/productAPI';
 import { Box, CircularProgress } from '@mui/material';
+import TotalsSummary from '../components/TotalsSummary';
 
 const CalorieTracer = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [totals, setTotals] = useState(null);
 
 
-  const fetchLogs = async (date = null) => {
+
+const fetchLogs = async (date = selectedDate) => {
   try {
-    const data = await getRecentLogs(date); 
-    setLogs(Array.isArray(data) ? [...data] : []);
+    const data = await getRecentLogs(date);
+
+    if (data && Array.isArray(data.logs)) {
+      setLogs([...data.logs]);
+    } else {
+      setLogs([]);
+    }
+
+    setTotals(data.totals || null);
+
   } catch (err) {
     console.error('Błąd pobierania:', err);
   } finally {
@@ -26,15 +38,15 @@ const CalorieTracer = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    try {
-      await deleteProductLog(id);
-      setLogs((prev) => prev.filter((log) => log.id !== id));
-      alert('Usunięto produkt.');
-    } catch (err) {
-      console.error(err);
-      alert('Nie udało się usunąć produktu.');
-    }
-  };
+  try {
+    await deleteProductLog(id);
+    alert('Usunięto produkt.');
+    fetchLogs(selectedDate);
+  } catch (err) {
+    console.error(err);
+    alert('Nie udało się usunąć produktu.');
+  }
+};
 
   if (loading) return <CircularProgress sx={{ m: 4 }} />;
 
@@ -62,6 +74,8 @@ const CalorieTracer = () => {
           </>
         )}
       </Box>
+      <TotalsSummary totals={totals} />
+
     </div>
   );
 };

@@ -10,7 +10,13 @@ export const registerUser = async (formData) => {
 
 export const loginUser = async (formData) => {
   const response = await axios.post(`${API_URL}/login`, formData);
-  return response.data; // token
+  const token = response.data.token; 
+
+
+  localStorage.setItem('token', token);
+console.log("Token w localStorage:", localStorage.getItem('token'));
+
+  return token;
 };
 
 export const verifyEmail = async (token) => {
