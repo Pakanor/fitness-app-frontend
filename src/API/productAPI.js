@@ -1,11 +1,12 @@
 const API_URL = 'http://localhost:5000/api/ProductsOperation';
 const token = localStorage.getItem("token");
+console.log("Token w productAPI:", token);
 
 
 export async function getRecentLogs(date = new Date().toISOString().split("T")[0]) {
+  const token = localStorage.getItem("token");
 
   const url = date ? `${API_URL}/recent?date=${date}` : `${API_URL}/recent`;
-
   const res = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -45,6 +46,8 @@ export async function searchProducts(query) {
 }
 
 export async function addProductLog(product, grams, nutriments) {
+    const token = localStorage.getItem("token");
+
   const body = {
     product: {
       productName: product.productName,

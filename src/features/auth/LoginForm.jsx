@@ -19,16 +19,14 @@ const LoginForm = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await loginUser(form); // wywołanie API logowania
-      alert('Logowanie udane: ' + res.message);
-      localStorage.setItem("token", res.token);
-    console.log(res.token);
-      navigate('/calorie-tracker'); // przekierowanie po zalogowaniu
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Nieznany błąd';
-      setError(msg);
-    }
-  };
+  const token = await loginUser(form); 
+  alert('Logowanie udane!');
+  console.log("Zalogowano, token:", token);
+  navigate('/calorie-tracker'); 
+} catch (err) {
+  const msg = err.response?.data?.message || 'Nieznany błąd';
+  setError(msg);
+}}
 
   return (
     <Box
