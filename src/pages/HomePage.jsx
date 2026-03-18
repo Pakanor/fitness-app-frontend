@@ -54,7 +54,6 @@ const HomePage = () => {
 
   return (
     <Box sx={{ bgcolor: 'background.default' }}>
-      {/* HERO */}
       <Box
         sx={{
           minHeight: '100vh',
@@ -92,7 +91,6 @@ const HomePage = () => {
         </Container>
       </Box>
 
-      {/* OPINIE */}
       <Container sx={{ py: 10 }}>
         <Typography variant="h4" fontWeight="bold" textAlign="center" mb={6}>
           Opinie naszych użytkowników
@@ -126,7 +124,6 @@ const HomePage = () => {
 </Grid>
       </Container>
 
-      {/* ZALETY */}
       <Box sx={{ bgcolor: '#f5f5f5', py: 10 }}>
         <Container>
           <Typography variant="h4" fontWeight="bold" textAlign="center" mb={6}>

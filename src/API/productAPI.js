@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5000/api/ProductsOperation';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5142/api/ProductsOperation';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5142/api';
 const token = localStorage.getItem("token");
 console.log("Token w productAPI:", token);
 
@@ -16,10 +17,12 @@ export async function getRecentLogs(date = new Date().toISOString().split("T")[0
 
   if (!res.ok) {
     console.error('Błąd pobierania:', res.status, res.statusText);
-    return []; 
+    return { logs: [], totals: null }; 
   }
 
-  return await res.json();
+  const data = await res.json();
+  console.log('Raw API response:', data);
+  return data;
 }
 
 
@@ -39,10 +42,37 @@ export async function updateProductLog(updatedEntry) {
   return await res.text();
 }
 
-export async function searchProducts(query) {
-  const res = await fetch(`${API_URL}/search?query=${encodeURIComponent(query)}`);
-  if (!res.ok) throw new Error('Błąd wyszukiwania produktów');
-  return await res.json();
+async function safeJson(res) {
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('safeJson parse failed, returning null', err);
+    return null;
+  }
+}
+
+export async function searchProducts(query, options = {}) {
+  const token = localStorage.getItem('token');
+  const url = `${API_URL}/search?query=${encodeURIComponent(query)}`;
+
+  const res = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...options,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error('searchProducts failed', res.status, errText);
+    throw new Error('Błąd wyszukiwania produktów');
+  }
+
+  const data = await safeJson(res);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function addProductLog(product, grams, nutriments) {
@@ -66,7 +96,7 @@ export async function addProductLog(product, grams, nutriments) {
 
   console.log("Payload wysyłany do /add:", body);
 
-  const res = await fetch("http://localhost:5000/api/ProductsOperation/add", {
+  const res = await fetch(`${API_URL}/add`, {
     method: "POST",
     headers: {
     "Content-Type": "application/json",
@@ -85,21 +115,27 @@ export async function addProductLog(product, grams, nutriments) {
 
 
 export async function calculated(selectedProduct, grams) {
-   const response = await fetch('http://localhost:5000/api/CalorieCalculator/calculate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            product: selectedProduct,  
-            grams: parseFloat(grams)
-          })
-        });
-  
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Błąd kalkulatora: ${errorText}`);
-        }
-  
-        const result = await response.json();
+  const response = await fetch(`${BASE_URL}/CalorieCalculator/calculate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      product: selectedProduct,
+      grams: parseFloat(grams),
+    }),
+  });
 
-        return result;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Błąd kalkulatora: ${errorText}`);
+  }
+
+  const text = await response.text();
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error('Błąd parsowania odpowiedzi kalkulatora');
+  }
 }
+

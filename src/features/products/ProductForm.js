@@ -122,11 +122,11 @@ const handleSubmit = async (e) => {
       });
       alert("Produkt zaktualizowano!");
     }
-
+    
     onSuccess();
 
     if (mode === 'add') {
-      setSearchTerm('');
+      setSearchTerm('product.productName');
       setSelectedProduct(null);
       setGrams('');
       setProducts([]);
@@ -173,7 +173,7 @@ const handleSubmit = async (e) => {
           </Box>
         )}
 
-        {products.length > 0 && !isSearching && (
+        {products.length > 0 && (
           <Paper
             sx={{
               maxHeight: 200,

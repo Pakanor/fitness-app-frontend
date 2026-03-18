@@ -19,10 +19,10 @@ function TotalsSummary({ totals }) {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
-        <Typography><strong>Kalorie:</strong> {totals.energy} kcal</Typography>
-        <Typography><strong>Białko:</strong> {totals.proteins} g</Typography>
-        <Typography><strong>Tłuszcz:</strong> {totals.fat} g</Typography>
-        <Typography><strong>Węglowodany:</strong> {totals.sugars} g</Typography>
+        <Typography><strong>Kalorie:</strong> {parseFloat(totals.energy).toFixed(2)} kcal</Typography>
+        <Typography><strong>Białko:</strong> {parseFloat(totals.proteins).toFixed(2)} g</Typography>
+        <Typography><strong>Tłuszcz:</strong> {parseFloat(totals.fat).toFixed(2)} g</Typography>
+        <Typography><strong>Węglowodany:</strong> {parseFloat(totals.sugars).toFixed(2)} g</Typography>
       </Box>
     </Paper>
   );

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, Typography, List, ListItem, Button, Stack } from '@mui/material';
 import ProductModal from '../../components/ProductModal'; 
 import DateSearch from '../../components/DateSearch';
 
 
-function ProductItem({ logs=[], onDelete, onProductUpdated }) {
-  const [modalMode, setModalMode] = useState(null); 
+
+function ProductItem({ logs = [], onDelete, onProductUpdated, selectedDate, setSelectedDate }) {
+  const [modalMode, setModalMode] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const openEditModal = (product) => {
@@ -28,11 +29,14 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
     if (onProductUpdated) onProductUpdated();
   };
 
+  const handleDateChange = useCallback((date) => {
+    setSelectedDate(date);
+  }, [setSelectedDate]);
   return (
 
     <Box
   sx={{
-    height: '70vh', // zmniejszone z 85vh
+    height: '70vh', 
     display: 'flex',
     flexDirection: 'column',
     p: 2,
@@ -42,8 +46,7 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
     Ostatnie produkty
   </Typography>
 
-  <DateSearch onSearch={onProductUpdated} />
-
+<DateSearch selectedDate={selectedDate} onSearch={handleDateChange} />
   <List
     sx={{
       flex: 1,
@@ -51,7 +54,7 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
       border: '1px solid',
       borderColor: 'divider',
       borderRadius: 1,
-      mb: 2, // dodaje odrobinę odstępu pod listą
+      mb: 2, 
     }}
   >
     {logs.map((log) => (
@@ -61,10 +64,10 @@ function ProductItem({ logs=[], onDelete, onProductUpdated }) {
       >
         <Typography variant="subtitle1" fontWeight="bold">{log.productName}</Typography>
         <Typography variant="body2">Ilość: {log.grams} g</Typography>
-        <Typography variant="body2">Energia: {log.energy} {log.energyUnit || 'kcal'}</Typography>
-        <Typography variant="body2">Tłuszcze: {log.fat} g</Typography>
-        <Typography variant="body2">Węglowodany: {log.sugars} g</Typography>
-        <Typography variant="body2">Białko: {log.proteins} g</Typography>
+        <Typography variant="body2">Energia: {parseFloat(log.energy).toFixed(2)} {log.energyUnit || 'kcal'}</Typography>
+        <Typography variant="body2">Tłuszcze: {parseFloat(log.fat).toFixed(2)} g</Typography>
+        <Typography variant="body2">Węglowodany: {parseFloat(log.sugars).toFixed(2)} g</Typography>
+        <Typography variant="body2">Białko: {parseFloat(log.proteins).toFixed(2)} g</Typography>
         <Typography variant="body2" color="text.secondary" mb={1}>
           {log.brands}
         </Typography>

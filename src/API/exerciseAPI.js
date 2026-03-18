@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/ExerciseDb/exercise';
+const API_URL = 'http://localhost:5185/api/ExerciseDb/exercise';
 
 
 export async function getExerciseCategory() {
