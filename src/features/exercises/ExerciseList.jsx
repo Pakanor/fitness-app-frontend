@@ -6,6 +6,7 @@ import {
   CircularProgress, Alert, TextField, Container,
   Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
+import AddExerciseModal from './AddExercuseModal';
 
 export function ExerciseList() {
   const { bodyPart } = useParams();
@@ -13,8 +14,8 @@ export function ExerciseList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
 
-  // Do modal:
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   useEffect(() => {
     getExercisesByBodyPart(bodyPart)
@@ -62,24 +63,37 @@ export function ExerciseList() {
         ))}
       </Grid>
 
-      {/* Modal z pustą zawartością */}
       <Dialog
         open={Boolean(selectedExercise)}
         onClose={() => setSelectedExercise(null)}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>{selectedExercise?.name || 'Ćwiczenie'}</DialogTitle>
+        <DialogTitle>{selectedExercise?.name || "Ćwiczenie"}</DialogTitle>
         <DialogContent>
-          {/* Tutaj póki co pusto lub placeholder */}
-          <Typography variant="body1">
-            Szczegóły ćwiczenia pojawią się tutaj.
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {selectedExercise?.description || "Brak opisu"}
           </Typography>
+
+          <Button
+            variant="contained"
+            onClick={() => setOpenAddModal(true)}
+          >
+            Dodaj ćwiczenie
+          </Button>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedExercise(null)}>Zamknij</Button>
         </DialogActions>
       </Dialog>
+
+      {selectedExercise && (
+        <AddExerciseModal
+          exercise={selectedExercise}
+          open={openAddModal}
+          onClose={() => setOpenAddModal(false)}
+        />
+      )}
     </Container>
   );
 }

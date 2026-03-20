@@ -8,10 +8,12 @@ import ExerciseStartPage from './pages/ExerciseStartPage';
 import ExerciseListPage from './pages/ExerciseListPage';
 import LoginForm from './pages/LoginPage';
 import ProtectedRoute from './pages/ProtectedRoute';
+import { AuthProvider } from './hooks/AuthContext';
 
 function App() {
   return (
     <Router>
+      <AuthProvider>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginForm />} />
@@ -21,6 +23,7 @@ function App() {
         <Route path="/exercise-start" element={<ExerciseStartPage />} />
         <Route path="/exercise/:bodyPart" element={<ExerciseListPage />} />
       </Routes>
+      </AuthProvider>
     </Router>
   );
 }

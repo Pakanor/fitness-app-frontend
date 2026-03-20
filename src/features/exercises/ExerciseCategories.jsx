@@ -14,7 +14,10 @@ import { Link } from 'react-router-dom';
 export function ExerciseCategories() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
-
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  console.log("Token w localStorage:", token);
+}, []);
   useEffect(() => {
     getExerciseCategory()
       .then(data => setCategories(data))

@@ -44,7 +44,7 @@ function Header() {
             }}
           >
             <Button color="inherit" href="/">Strona główna</Button>
-            <Button color="inherit" href="/exercises">Ćwiczenia</Button>
+            <Button color="inherit" href="/exercise-start">Ćwiczenia</Button>
             <Button color="inherit" href="/calorie-tracker">Licznik kalorii</Button>
 
             <Button
@@ -148,7 +148,7 @@ function Header() {
             }}
           >
             <Button color="inherit" href="/" onClick={() => setMenuOpen(false)}>Strona główna</Button>
-            <Button color="inherit" href="/exercises" onClick={() => setMenuOpen(false)}>Ćwiczenia</Button>
+            <Button color="inherit" href="/exercise-start" onClick={() => setMenuOpen(false)}>Ćwiczenia</Button>
             <Button color="inherit" href="/calorie-tracker" onClick={() => setMenuOpen(false)}>Licznik kalorii</Button>
 
             <Button
