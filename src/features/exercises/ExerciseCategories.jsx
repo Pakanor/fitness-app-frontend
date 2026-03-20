@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getExerciseCategory } from '../../API/exerciseAPI'; 
+import { getExerciseCategory } from '../../api/exerciseAPI'; 
 import {
   Grid,
   Card,

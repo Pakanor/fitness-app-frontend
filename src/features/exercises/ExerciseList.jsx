@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getExercisesByBodyPart } from '../../API/exerciseAPI';
+import { getExercisesByBodyPart } from '../../api/exerciseAPI';
 import {
   Grid, Card, CardContent, Typography,
   CircularProgress, Alert, TextField, Container,

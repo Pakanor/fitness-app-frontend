@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addProductLog,updateProductLog,searchProducts ,calculated} from '../../API/productAPI';
+import { addProductLog,updateProductLog,searchProducts ,calculated} from '../../api/productAPI';
 
 
 import {

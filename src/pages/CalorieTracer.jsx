@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import Header from '../components/Header';
+import Header from '../components/layout/Header';
 import ProductItem from '../features/products/ProductItem';
 import ProductForm from '../features/products/ProductForm';
-import { getRecentLogs, deleteProductLog } from '../API/productAPI';
+import { getRecentLogs, deleteProductLog } from '../api/productAPI';
 import { Box, CircularProgress } from '@mui/material';
 import TotalsSummary from '../components/TotalsSummary';
 
@@ -21,10 +21,8 @@ const CalorieTracer = () => {
       console.log('Backend response structure:', data);
       
       if (Array.isArray(data)) {
-        // Backend zwraca tablicę produktów
         setLogs([...data]);
         
-        // Obliczamy totals z produktów
         if (data.length > 0) {
           const totals = data.reduce(
             (acc, log) => ({
@@ -40,7 +38,6 @@ const CalorieTracer = () => {
           setTotals(null);
         }
       } else if (data && Array.isArray(data.logs)) {
-        // Fallback: jeśli backend zwraca obiekt z logs
         setLogs([...data.logs]);
         setTotals(data.totals || null);
       } else {
@@ -58,7 +55,6 @@ const CalorieTracer = () => {
 
   useEffect(() => {
     fetchLogs(selectedDate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   const handleDelete = async (id) => {
