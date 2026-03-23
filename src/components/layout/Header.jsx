@@ -1,180 +1,73 @@
 import { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Slide, useScrollTrigger } from '@mui/material';
-
-function HideOnScroll(props) {
-  const { children } = props;
-  const trigger = useScrollTrigger();
-
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children}
-    </Slide>
-  );
-}
+import { toast } from '../common/Toast';
 
 function Header() {
-  const [menuOpen, setMenuOpen] = useState(false); 
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null); 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-
-  const handleAccountClick = (event) => {
-    setAccountAnchorEl(event.currentTarget);
+  const handleLogout = () => {
+    toast('Wylogowano');
+    localStorage.removeItem("token");
+    window.location.href = '/login';
   };
-
-  const handleAccountClose = () => {
-    setAccountAnchorEl(null);
-  };
-
-  const isAccountMenuOpen = Boolean(accountAnchorEl);
 
   return (
-    <HideOnScroll>
-      <AppBar position="sticky" color="primary">
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6" sx={{ cursor: 'pointer' }}>
-            FitnessApp
-          </Typography>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+        .site-header { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; background: #0d0d0f; border-bottom: 1px solid #1e1e22; position: sticky; top: 0; z-index: 100; width: 100%; box-sizing: border-box; }
+        .header-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: -0.5px; color: #f0ede8; text-decoration: none; cursor: pointer; }
+        .header-logo span { color: #c8f542; }
+        .header-nav { display: flex; align-items: center; gap: 4px; }
+        .nav-link { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #666; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: none; background: none; cursor: pointer; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+        .nav-link:hover { color: #f0ede8; background: #1e1e22; }
+        .account-wrap { position: relative; }
+        .account-btn { display: flex; align-items: center; gap: 4px; }
+        .chevron { font-size: 9px; color: #444; }
+        .account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #16161a; border: 1px solid #1e1e22; border-radius: 10px; padding: 6px; min-width: 140px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .dropdown-item { font-family: 'DM Sans', sans-serif; font-size: 13px; color: #aaa; text-decoration: none; padding: 8px 12px; border-radius: 7px; border: none; background: none; cursor: pointer; text-align: left; transition: color 0.15s, background 0.15s; display: block; width: 100%; }
+        .dropdown-item:hover { color: #f0ede8; background: #1e1e22; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+        .hamburger-line { width: 24px; height: 2px; background: #f0ede8; border-radius: 2px; transition: 0.3s; display: block; }
+        .hamburger-line.open-1 { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger-line.open-2 { opacity: 0; }
+        .hamburger-line.open-3 { transform: rotate(-45deg) translate(5px, -5px); }
+        .mobile-menu { display: none; flex-direction: column; background: #0d0d0f; border-top: 1px solid #1e1e22; padding: 12px 16px; gap: 4px; position: sticky; top: 56px; z-index: 99; }
+        .mobile-menu.open { display: flex; }
+        @media (max-width: 600px) { .header-nav { display: none; } .hamburger { display: flex; } }
+      `}</style>
 
-          <Box
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Button color="inherit" href="/">Strona główna</Button>
-            <Button color="inherit" href="/exercise-start">Ćwiczenia</Button>
-            <Button color="inherit" href="/calorie-tracker">Licznik kalorii</Button>
-
-            <Button
-              color="inherit"
-              onClick={handleAccountClick}
-              endIcon={<span style={{fontSize: '0.7em'}}>▼</span>}
-            >
-              Konto
-            </Button>
-
-            <Menu
-              anchorEl={accountAnchorEl}
-              open={isAccountMenuOpen}
-              onClose={handleAccountClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              <MenuItem
-                onClick={() => {
-                  handleAccountClose();
-                  window.location.href = '/profile';
-                }}
-              >
-                Profil
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  handleAccountClose();
-                  alert('Wylogowano');
-                  localStorage.removeItem("token");
-                  window.location.href = '/login';
-
-                }}
-              >
-                Wyloguj się
-              </MenuItem>
-            </Menu>
-          </Box>
-
-          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-            <button
-              onClick={toggleMenu}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 8,
-                fontSize: 24,
-                color: 'white',
-                userSelect: 'none',
-              }}
-              aria-label="Toggle menu"
-            >
-              <div
-                style={{
-                  width: 25,
-                  height: 3,
-                  backgroundColor: 'white',
-                  margin: '5px 0',
-                  transition: '0.4s',
-                  transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none',
-                }}
-              />
-              <div
-                style={{
-                  width: 25,
-                  height: 3,
-                  backgroundColor: 'white',
-                  margin: '5px 0',
-                  opacity: menuOpen ? 0 : 1,
-                  transition: '0.4s',
-                }}
-              />
-              <div
-                style={{
-                  width: 25,
-                  height: 3,
-                  backgroundColor: 'white',
-                  margin: '5px 0',
-                  transition: '0.4s',
-                  transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none',
-                }}
-              />
+      <header className="site-header">
+        <a href="/" className="header-logo">Fitness<span>App</span></a>
+        <nav className="header-nav">
+          <a href="/exercise-start" className="nav-link">Ćwiczenia</a>
+          <a href="/calorie-tracker" className="nav-link">Kalorie</a>
+          <div className="account-wrap">
+            <button className="nav-link account-btn" onClick={() => setAccountOpen(o => !o)}>
+              Konto <span className="chevron">{accountOpen ? "▲" : "▼"}</span>
             </button>
-          </Box>
-        </Toolbar>
+            {accountOpen && (
+              <div className="account-dropdown">
+                <a href="/profile" className="dropdown-item" onClick={() => setAccountOpen(false)}>Profil</a>
+                <button className="dropdown-item" onClick={handleLogout}>Wyloguj się</button>
+              </div>
+            )}
+          </div>
+        </nav>
+        <button className="hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+          <span className={`hamburger-line ${menuOpen ? 'open-1' : ''}`} />
+          <span className={`hamburger-line ${menuOpen ? 'open-2' : ''}`} />
+          <span className={`hamburger-line ${menuOpen ? 'open-3' : ''}`} />
+        </button>
+      </header>
 
-        {menuOpen && (
-          <Box
-            sx={{
-              display: { xs: 'flex', sm: 'none' },
-              flexDirection: 'column',
-              backgroundColor: '#1976d2',
-              padding: 2,
-            }}
-          >
-            <Button color="inherit" href="/" onClick={() => setMenuOpen(false)}>Strona główna</Button>
-            <Button color="inherit" href="/exercise-start" onClick={() => setMenuOpen(false)}>Ćwiczenia</Button>
-            <Button color="inherit" href="/calorie-tracker" onClick={() => setMenuOpen(false)}>Licznik kalorii</Button>
-
-            <Button
-              color="inherit"
-              onClick={() => {
-                setMenuOpen(false);
-                window.location.href = '/profile';
-              }}
-              sx={{ textAlign: 'left' }}
-            >
-              Profil
-            </Button>
-            <Button
-              color="inherit"
-              onClick={() => {
-                setMenuOpen(false);
-                alert('Wylogowano');
-              }}
-              sx={{ textAlign: 'left' }}
-            >
-              Wyloguj się
-            </Button>
-          </Box>
-        )}
-      </AppBar>
-    </HideOnScroll>
+      <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
+        <a href="/exercise-start" className="nav-link" onClick={() => setMenuOpen(false)}>Ćwiczenia</a>
+        <a href="/calorie-tracker" className="nav-link" onClick={() => setMenuOpen(false)}>Kalorie</a>
+        <a href="/profile" className="nav-link" onClick={() => setMenuOpen(false)}>Profil</a>
+        <button className="nav-link" style={{ textAlign: 'left' }} onClick={handleLogout}>Wyloguj się</button>
+      </div>
+    </>
   );
 }
 

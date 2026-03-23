@@ -1,12 +1,16 @@
 import React from 'react';
-import { ExerciseCategories } from '../features/exercises/ExerciseCategories';
+import Header from '../components/layout/Header';
+import WorkoutDashboard from '../features/exercises/Workoutdashboard';
 
-export function ExerciseStartPage() {
+function ExercisePage() {
   return (
-    <div>
-      <h1>Kategorie ćwiczeń</h1>
-      <ExerciseCategories />
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0d0d0f' }}>
+      <Header />
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <WorkoutDashboard />
+      </div>
     </div>
   );
 }
-export default ExerciseStartPage;
+
+export default ExercisePage;

@@ -1,15 +1,28 @@
 import React, { useState } from "react";
 import AddExerciseModal from "./AddExerciseModal";
-import { Button } from "@mui/material";
 
 export default function AddExerciseButton({ exercise }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <Button variant="contained" onClick={() => setOpen(true)}>
+      <button
+        onClick={() => setOpen(true)}
+        style={{
+          padding: '10px 20px',
+          background: '#c8f542',
+          color: '#0d0d0f',
+          border: 'none',
+          borderRadius: 10,
+          fontFamily: 'Syne, sans-serif',
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: 'pointer',
+          transition: 'background 0.15s',
+        }}
+      >
         Dodaj ćwiczenie
-      </Button>
+      </button>
       {open && (
         <AddExerciseModal
           exercise={exercise}

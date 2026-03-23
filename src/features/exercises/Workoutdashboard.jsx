@@ -35,7 +35,11 @@ function ExerciseCard({ entry, onDelete }) {
     <div className="exercise-card" style={{ "--accent": color }}>
       <div className="card-left">
         {entry.gifUrl ? (
-          <img src={entry.gifUrl} alt={entry.name} className="exercise-gif" />
+          <img
+            src={`http://localhost:5185${entry.gifUrl}`}
+            alt={entry.name}
+            className="exercise-gif"
+          />
         ) : (
           <div className="exercise-gif placeholder-gif">
             <span>💪</span>
@@ -93,8 +97,7 @@ function EmptyState() {
 }
 
 function TodayHeader({ count, date }) {
-
-  const parsed = new Date(date + "T12:00:00"); // T12 żeby uniknąć timezone shift
+  const parsed = new Date(date + "T12:00:00");
   const dayName = parsed.toLocaleDateString("pl-PL", { weekday: "long" });
   const dateStr = parsed.toLocaleDateString("pl-PL", {
     day: "numeric",
@@ -129,24 +132,24 @@ export default function WorkoutDashboard() {
     new Date().toISOString().slice(0, 10)
   );
 
-    const fetchExercises = useCallback(async (date) => {
-        setLoading(true);
-        setError(null);
-        try {
-        const data = await getExercisesByDate(date);
-        setExercises(data);
-        } catch (e) {
-        setError(e.message || "Błąd pobierania ćwiczeń");
-        } finally {
-        setLoading(false);
-        }
-    }, []);
+  const fetchExercises = useCallback(async (date) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getExercisesByDate(date);
+      setExercises(data);
+    } catch (e) {
+      setError(e.message || "Błąd pobierania ćwiczeń");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchExercises(selectedDate);
-  }, [selectedDate, fetchExercises])
+  }, [selectedDate, fetchExercises]);
 
-   const handleDelete = async (userExerciseId) => {
+  const handleDelete = async (userExerciseId) => {
     await deleteUserExercise(userExerciseId);
     setExercises((prev) => prev.filter((e) => e.userExerciseId !== userExerciseId));
   };
@@ -168,39 +171,50 @@ export default function WorkoutDashboard() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         .dashboard {
-          min-height: 100vh;
+          height: calc(100vh - 52px);
           background: #0d0d0f;
           color: #f0ede8;
           font-family: 'DM Sans', sans-serif;
-          padding: 32px 20px 80px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
 
         .dashboard-inner {
-          max-width: 680px;
+          max-width: 960px;
+          width: 100%;
           margin: 0 auto;
-        }
-
-        /* Top bar */
-        .top-bar {
+          padding: 32px 20px 0;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 36px;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
         }
 
-        .logo {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 22px;
-          letter-spacing: -0.5px;
-          color: #f0ede8;
+        .content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
         }
 
-        .logo span {
-          color: #c8f542;
+        .exercise-list {
+          flex: 1;
+          overflow-y: auto;
+          padding-right: 4px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          min-height: 0;
         }
 
-        /* Today header */
+        .bottom-bar {
+          flex-shrink: 0;
+          padding: 16px 0 24px;
+          background: #0d0d0f;
+          border-top: 1px solid #1e1e22;
+        }
+
         .today-header {
           display: flex;
           align-items: flex-end;
@@ -252,7 +266,6 @@ export default function WorkoutDashboard() {
           letter-spacing: 1px;
         }
 
-        /* Section label */
         .section-label {
           font-size: 11px;
           text-transform: uppercase;
@@ -260,28 +273,6 @@ export default function WorkoutDashboard() {
           color: #444;
           margin-bottom: 12px;
           font-weight: 500;
-        }
-
-        /* Exercise list */
-        .exercise-list {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 28px;
-        }
-
-        /* Exercise card */
-        .exercise-card {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          background: #16161a;
-          border: 1px solid #1e1e22;
-          border-left: 3px solid var(--accent);
-          border-radius: 12px;
-          padding: 14px 16px 14px 14px;
-          transition: border-color 0.2s, background 0.2s;
-          position: relative;
         }
 
         .exercise-card:hover {
@@ -293,22 +284,36 @@ export default function WorkoutDashboard() {
         }
 
         .exercise-gif {
-          width: 52px;
-          height: 52px;
+          width: 90px;
+          height: 90px;
           border-radius: 8px;
           object-fit: cover;
           background: #1e1e22;
         }
 
         .placeholder-gif {
-          width: 52px;
-          height: 52px;
+          width: 90px;
+          height: 90px;
           border-radius: 8px;
           background: #1e1e22;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 22px;
+        }
+
+        .exercise-card {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          background: #16161a;
+          border: 1px solid #1e1e22;
+          border-left: 3px solid var(--accent);
+          border-radius: 12px;
+          padding: 16px;
+          transition: border-color 0.2s, background 0.2s;
+          position: relative;
+          min-height: 110px;
         }
 
         .card-body {
@@ -395,7 +400,6 @@ export default function WorkoutDashboard() {
           cursor: default;
         }
 
-        /* Empty state */
         .empty-state {
           display: flex;
           flex-direction: column;
@@ -423,7 +427,6 @@ export default function WorkoutDashboard() {
           color: #2a2a2f;
         }
 
-        /* Loading */
         .loading-wrap {
           display: flex;
           justify-content: center;
@@ -441,7 +444,6 @@ export default function WorkoutDashboard() {
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Error */
         .error-box {
           background: rgba(239,68,68,0.08);
           border: 1px solid rgba(239,68,68,0.2);
@@ -452,7 +454,6 @@ export default function WorkoutDashboard() {
           margin-bottom: 20px;
         }
 
-        /* Add button */
         .add-btn {
           display: flex;
           align-items: center;
@@ -482,7 +483,7 @@ export default function WorkoutDashboard() {
 
         .add-btn-icon {
           width: 26px;
-          height: 26px;
+          height: 20px;
           background: #0d0d0f;
           border-radius: 6px;
           display: flex;
@@ -495,36 +496,34 @@ export default function WorkoutDashboard() {
         }
       `}</style>
 
- <div className="dashboard">
+      <div className="dashboard">
         <div className="dashboard-inner">
-          <div className="top-bar">
-            <div className="logo">Workout<span>.</span></div>
-          </div>
-
           <TodayHeader count={exercises.length} date={selectedDate} />
-
           <DateSearch selectedDate={selectedDate} onSearch={handleDateSearch} />
-
           <div className="section-label">Trening</div>
 
-          {loading ? (
-            <div className="loading-wrap"><div className="spinner" /></div>
-          ) : error ? (
-            <div className="error-box">⚠️ {error}</div>
-          ) : exercises.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div className="exercise-list">
-              {exercises.map((entry) => (
-                <ExerciseCard key={entry.userExerciseId} entry={entry} onDelete={handleDelete} />
-              ))}
-            </div>
-          )}
+          <div className="content">
+            {loading ? (
+              <div className="loading-wrap"><div className="spinner" /></div>
+            ) : error ? (
+              <div className="error-box">⚠️ {error}</div>
+            ) : exercises.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <div className="exercise-list">
+                {exercises.map((entry) => (
+                  <ExerciseCard key={entry.userExerciseId} entry={entry} onDelete={handleDelete} />
+                ))}
+              </div>
+            )}
 
-          <button className="add-btn" onClick={() => setModalOpen(true)}>
-            <span className="add-btn-icon">+</span>
-            Dodaj ćwiczenie
-          </button>
+            <div className="bottom-bar">
+              <button className="add-btn" onClick={() => setModalOpen(true)}>
+                <span className="add-btn-icon">+</span>
+                Dodaj ćwiczenie
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

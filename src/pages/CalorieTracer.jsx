@@ -1,11 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import Header from '../components/layout/Header';
 import ProductItem from '../features/products/ProductItem';
 import ProductForm from '../features/products/ProductForm';
 import { getRecentLogs, deleteProductLog } from '../api/productAPI';
-import { Box, CircularProgress } from '@mui/material';
 import TotalsSummary from '../components/TotalsSummary';
-
+import { toast } from '../components/common/Toast';
+import Header from '../components/layout/Header';
 
 const CalorieTracer = () => {
   const [logs, setLogs] = useState([]);
@@ -18,13 +17,10 @@ const CalorieTracer = () => {
     setLoading(true);
     try {
       const data = await getRecentLogs(date);
-      console.log('Backend response structure:', data);
-      
       if (Array.isArray(data)) {
         setLogs([...data]);
-        
         if (data.length > 0) {
-          const totals = data.reduce(
+          const t = data.reduce(
             (acc, log) => ({
               energy: acc.energy + (log.energy || 0),
               proteins: acc.proteins + (log.proteins || 0),
@@ -33,7 +29,7 @@ const CalorieTracer = () => {
             }),
             { energy: 0, proteins: 0, fat: 0, sugars: 0 }
           );
-          setTotals(totals);
+          setTotals(t);
         } else {
           setTotals(null);
         }
@@ -60,43 +56,44 @@ const CalorieTracer = () => {
   const handleDelete = async (id) => {
     try {
       await deleteProductLog(id);
-      alert('Usunięto produkt.');
+      toast('Usunięto produkt.');
       fetchLogs(selectedDate);
     } catch (err) {
       console.error(err);
-      alert('Nie udało się usunąć produktu.');
+      toast('Nie udało się usunąć produktu.');
     }
   };
 
-  if (loading) return <CircularProgress sx={{ m: 4 }} />;
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: '#0d0d0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 28, height: 28, border: '2px solid #1e1e22', borderTopColor: '#c8f542', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
-  return (
-    <div style={{ paddingBottom: totals ? '120px' : '0' }}>
+return (
+    <div style={{ height: '94vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0d0d0f' }}>
       <Header />
-      <Box sx={{ p: 2 }}>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {showAddForm ? (
           <ProductForm
             mode="add"
-            onSuccess={() => {
-              fetchLogs(selectedDate);
-              setShowAddForm(false);
-            }}
+            onSuccess={() => { fetchLogs(selectedDate); setShowAddForm(false); }}
           />
         ) : (
-          <>
-            <ProductItem
-              logs={logs}
-              onDelete={handleDelete}
-              onProductUpdated={() => fetchLogs(selectedDate)}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </>
+          <ProductItem
+            logs={logs}
+            onDelete={handleDelete}
+            onProductUpdated={() => fetchLogs(selectedDate)}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         )}
-      </Box>
+      </div>
       <TotalsSummary totals={totals} />
     </div>
   );
+ 
 };
 
 export default CalorieTracer;
