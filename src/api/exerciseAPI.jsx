@@ -27,3 +27,20 @@ export const addUserExercise = async (exerciseData) => {
 
   return response.data;
 };
+  export const getExercisesByDate = async (date) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Brak tokena w localStorage");
+    const response = await axios.get(`${API_URL}/userexercise/bydate?date=${date}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  };
+
+  export const deleteUserExercise = async (userExerciseId) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Brak tokena w localStorage");
+    await axios.delete(`${API_URL}/userexercise/${userExerciseId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });}

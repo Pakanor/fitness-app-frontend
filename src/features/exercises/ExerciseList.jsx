@@ -6,7 +6,7 @@ import {
   CircularProgress, Alert, TextField, Container,
   Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
-import AddExerciseModal from './AddExercuseModal';
+import AddExerciseModal from './AddExerciseModal';
 
 export function ExerciseList() {
   const { bodyPart } = useParams();
