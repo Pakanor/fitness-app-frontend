@@ -36,7 +36,7 @@ React frontend for the FitnessApp full-stack fitness tracking application. Provi
 ## Project Structure
 
 
-fitness-app-frontend/
+```fitness-app-frontend/
 ├── public/
 │ ├── index.html
 │ └── ...
@@ -51,7 +51,7 @@ fitness-app-frontend/
 │ └── index.js
 ├── package.json
 └── README_FRONTEND.md
-
+```
 
 ## Installation
 
