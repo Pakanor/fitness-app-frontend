@@ -38,7 +38,7 @@ function Header() {
       `}</style>
 
       <header className="site-header">
-        <a href="/" className="header-logo">Fitness<span>App</span></a>
+        <a className="header-logo">Fitness<span>App</span></a>
         <nav className="header-nav">
           <a href="/exercise-start" className="nav-link">Ćwiczenia</a>
           <a href="/calorie-tracker" className="nav-link">Kalorie</a>

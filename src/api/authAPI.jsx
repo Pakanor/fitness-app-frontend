@@ -14,7 +14,6 @@ export const loginUser = async (formData) => {
 
 
   localStorage.setItem('token', token);
-console.log("Token w localStorage:", localStorage.getItem('token'));
 
   return token;
 };

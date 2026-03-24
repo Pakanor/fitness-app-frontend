@@ -1,7 +1,7 @@
 import React from 'react';
 
 function TotalsSummary({ totals }) {
-  if (!totals) return null;
+  
 
   return (
     <>
@@ -50,19 +50,19 @@ function TotalsSummary({ totals }) {
 
       <div className="ts-bar">
         <div className="ts-item">
-          <span className="ts-value">{parseFloat(totals.energy).toFixed(0)} kcal</span>
+          <span className="ts-value">{parseFloat(totals?.energy || 0).toFixed(0)} kcal</span>
           <span className="ts-label">Kalorie</span>
         </div>
         <div className="ts-item">
-          <span className="ts-value">{parseFloat(totals.proteins).toFixed(1)} g</span>
+          <span className="ts-value">{parseFloat(totals?.proteins || 0).toFixed(1)} g</span>
           <span className="ts-label">Białko</span>
         </div>
         <div className="ts-item">
-          <span className="ts-value">{parseFloat(totals.fat).toFixed(1)} g</span>
+          <span className="ts-value">{parseFloat(totals?.fat || 0).toFixed(1)} g</span>
           <span className="ts-label">Tłuszcz</span>
         </div>
         <div className="ts-item">
-          <span className="ts-value">{parseFloat(totals.sugars).toFixed(1)} g</span>
+          <span className="ts-value">{parseFloat(totals?.sugars || 0).toFixed(1)} g</span>
           <span className="ts-label">Węglowodany</span>
         </div>
       </div>

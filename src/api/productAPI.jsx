@@ -1,7 +1,6 @@
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5142/api/ProductsOperation';
 const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5142/api';
 const token = localStorage.getItem("token");
-console.log("Token w productAPI:", token);
 
 
 export async function getRecentLogs(date = new Date().toISOString().split("T")[0]) {
@@ -21,7 +20,6 @@ export async function getRecentLogs(date = new Date().toISOString().split("T")[0
   }
 
   const data = await res.json();
-  console.log('Raw API response:', data);
   return data;
 }
 
@@ -94,7 +92,6 @@ export async function addProductLog(product, grams, nutriments) {
     grams: parseFloat(grams)
   };
 
-  console.log("Payload wysyłany do /add:", body);
 
   const res = await fetch(`${API_URL}/add`, {
     method: "POST",
