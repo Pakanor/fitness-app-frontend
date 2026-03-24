@@ -3,7 +3,7 @@
 
 # FitnessApp Frontend
 
-React frontend for the FitnessApp full-stack fitness tracking application. Provides user interface for calorie monitoring, exercise tracking, and nutritional analysis.
+React frontend for the FitnessApp full-stack fitness tracking application. Provides user interface for calorie monitoring and  exercise tracking,
 
 ## Table of Contents
 
