@@ -38,15 +38,14 @@ React frontend for the FitnessApp full-stack fitness tracking application. Provi
 
 ```fitness-app-frontend/
 ├── public/
-│ ├── index.html
-│ └── ...
+│ 
+│ 
 ├── src/
 │ ├── api/ # API service layers
 │ ├── components/ # Reusable components
 │ ├── features/ # Feature-specific components
 │ ├── hooks/ # Custom hooks (AuthContext)
 │ ├── pages/ # Page components
-│ ├── utils/ # Utility functions
 │ ├── App.jsx
 │ └── index.js
 ├── package.json
