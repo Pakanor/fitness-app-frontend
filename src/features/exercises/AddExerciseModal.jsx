@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../hooks/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { addUserExercise, getExerciseCategory, getExercisesByBodyPart } from "../../api/exerciseAPI";
 import { toast } from "../../components/common/Toast";
 
@@ -16,13 +16,14 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const [rpe, setRpe] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
       setStep(0); setSelectedCategory(null); setSelectedExercise(null); setSearch("");
-      setSets(""); setReps(""); setWeight(""); setDate(new Date().toISOString().slice(0, 10));
+      setSets(""); setReps(""); setWeight(""); setRpe(""); setDate(new Date().toISOString().slice(0, 10));
     }
   }, [open]);
 
@@ -54,6 +55,7 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
         sets: sets ? parseInt(sets) : null,
         reps: reps ? parseInt(reps) : null,
         weight: weight ? parseFloat(weight) : null,
+        rpe: rpe ? parseInt(rpe) : null,
         date,
       });
       toast("Ćwiczenie dodane!");
@@ -167,6 +169,7 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
                   { label: "Serie", value: sets, set: setSets },
                   { label: "Powtórzenia", value: reps, set: setReps },
                   { label: "Waga (kg)", value: weight, set: setWeight },
+                  { label: "RPE (1-10)", value: rpe, set: setRpe },
                 ].map(({ label, value, set }) => (
                   <div key={label} className="aem-field">
                     <label className="aem-label">{label}</label>

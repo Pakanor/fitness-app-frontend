@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { toast } from '../common/Toast';
+import { logoutUser } from '../../api/authAPI';
+import { useAuth } from '../../context/AuthContext';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const { setUser } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutUser();
+    setUser(null);
     toast('Wylogowano');
-    localStorage.removeItem("token");
     window.location.href = '/login';
   };
 
@@ -41,6 +45,8 @@ function Header() {
         <a className="header-logo">Fitness<span>App</span></a>
         <nav className="header-nav">
           <a href="/exercise-start" className="nav-link">Ćwiczenia</a>
+          <a href="/dashboard" className="nav-link">Analiza</a>
+          <a href="/records" className="nav-link">Rekordy</a>
           <a href="/calorie-tracker" className="nav-link">Kalorie</a>
           <div className="account-wrap">
             <button className="nav-link account-btn" onClick={() => setAccountOpen(o => !o)}>
@@ -63,6 +69,8 @@ function Header() {
 
       <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
         <a href="/exercise-start" className="nav-link" onClick={() => setMenuOpen(false)}>Ćwiczenia</a>
+        <a href="/dashboard" className="nav-link" onClick={() => setMenuOpen(false)}>Analiza</a>
+        <a href="/records" className="nav-link" onClick={() => setMenuOpen(false)}>Rekordy</a>
         <a href="/calorie-tracker" className="nav-link" onClick={() => setMenuOpen(false)}>Kalorie</a>
         <a href="/profile" className="nav-link" onClick={() => setMenuOpen(false)}>Profil</a>
         <button className="nav-link" style={{ textAlign: 'left' }} onClick={handleLogout}>Wyloguj się</button>

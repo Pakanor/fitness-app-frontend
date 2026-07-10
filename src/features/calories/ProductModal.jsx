@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import ProductForm from '../features/products/ProductForm';
+import ProductForm from './ProductForm';
 
 function ProductModal({ product, mode, onClose, onUpdated }) {
   useEffect(() => {

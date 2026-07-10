@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ProductModal from '../../components/ProductModal';
+import ProductModal from './ProductModal';
 import DateSearch from '../../components/DateSearch';
  
 function ProductItem({ logs = [], onDelete, onProductUpdated, selectedDate, setSelectedDate }) {

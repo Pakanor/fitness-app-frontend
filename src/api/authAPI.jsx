@@ -1,24 +1,32 @@
-// src/API/authApi.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5010/api/auth';
+const API_URL = 'http://localhost:8000/api/auth';
+
+const apiClient = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
 export const registerUser = async (formData) => {
-  const response = await axios.post(`${API_URL}/register`, formData);
+  const response = await apiClient.post('/register', formData);
   return response.data;
 };
 
 export const loginUser = async (formData) => {
-  const response = await axios.post(`${API_URL}/login`, formData);
-  const token = response.data.token; 
-
-
-  localStorage.setItem('token', token);
-
-  return token;
+  const response = await apiClient.post('/login', formData);
+  return response.data;
 };
 
 export const verifyEmail = async (token) => {
-  const response = await axios.get(`${API_URL}/verify?token=${token}`);
+  const response = await apiClient.get(`/verify?token=${token}`);
   return response.data;
+};
+
+export const fetchMe = async () => {
+  const response = await apiClient.get('/me');
+  return response.data;
+};
+
+export const logoutUser = async () => {
+  await apiClient.post('/logout');
 };

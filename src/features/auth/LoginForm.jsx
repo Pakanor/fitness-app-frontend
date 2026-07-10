@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../api/authAPI';
+import { loginUser, fetchMe } from '../../api/authAPI';
 import { toast } from '../../components/common/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginForm = () => {
-  const [form, setForm] = useState({ EmailOrLogin: '', password: '' });
+  const [form, setForm] = useState({ EmailOrLogin: '', Password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { user, setUser } = useAuth();
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) navigate('/calorie-tracker');
-  }, [navigate]);
+    if (user) {
+      navigate('/calorie-tracker');
+    }
+  }, [user, navigate]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const token = await loginUser(form);
+      await loginUser(form);
+      const me = await fetchMe();
+      setUser(me);
       toast('Logowanie udane!');
-      console.log("Zalogowano, token:", token);
       navigate('/calorie-tracker');
     } catch (err) {
       setError(err.response?.data?.message || 'Nieznany błąd');
@@ -161,8 +165,8 @@ const LoginForm = () => {
               <input
                 className="lf-input"
                 type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                value={form.Password}
+                onChange={(e) => setForm({ ...form, Password: e.target.value })}
                 placeholder="••••••••"
                 required
               />

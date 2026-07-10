@@ -78,17 +78,21 @@ Access Calorie Tracker and Exercise pages
 View dashboards and daily summaries
 Connecting to Backend
 
-This frontend communicates with AuthAPI, ExerciseAPI, and BackendLogicApi.
+This frontend communicates with the YARP Gateway (port 8000), which routes to:
+- AuthAPI (Port 5010)
+- ExerciseAPI (Port 5185)
+- BackendLogicApi (Port 5142)
+
 See the backend repository for API documentation:
 Backend Repository
 
-Include your JWT token in localStorage for protected requests:
+Authentication uses HttpOnly cookies - no manual token management required:
 
-localStorage.setItem('token', token);
-const headers = {
-  'Authorization': `Bearer ${token}`,
-  'Content-Type': 'application/json'
-};
+```javascript
+// Axios requests automatically include cookies
+const response = await axios.post('/api/auth/login', formData);
+// Token is stored as __Host-FitnessApp-Auth cookie automatically
+```
 Future Improvements
 Dark mode toggle
 Mobile optimization

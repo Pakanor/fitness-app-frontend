@@ -1,15 +1,11 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5142/api/ProductsOperation';
-const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:5142/api';
-const token = localStorage.getItem("token");
-
+const API_URL = 'http://localhost:8000/api/ProductsOperation';
+const BASE_URL = 'http://localhost:8000/api/CalorieCalculator';
 
 export async function getRecentLogs(date = new Date().toISOString().split("T")[0]) {
-  const token = localStorage.getItem("token");
-
   const url = date ? `${API_URL}/recent?date=${date}` : `${API_URL}/recent`;
   const res = await fetch(url, {
+    credentials: 'include',
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
@@ -25,7 +21,10 @@ export async function getRecentLogs(date = new Date().toISOString().split("T")[0
 
 
 export async function deleteProductLog(id) {
-  const res = await fetch(`${API_URL}/delete/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${API_URL}/delete/${id}`, { 
+    method: 'DELETE',
+    credentials: 'include'
+  });
   if (!res.ok) throw new Error('Błąd usuwania');
   return await res.text();
 }
@@ -33,6 +32,7 @@ export async function deleteProductLog(id) {
 export async function updateProductLog(updatedEntry) {
   const res = await fetch(`${API_URL}/update`, {
     method: 'PUT',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updatedEntry),
   });
@@ -52,13 +52,12 @@ async function safeJson(res) {
 }
 
 export async function searchProducts(query, options = {}) {
-  const token = localStorage.getItem('token');
   const url = `${API_URL}/search?query=${encodeURIComponent(query)}`;
 
   const res = await fetch(url, {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     ...options,
   });
@@ -74,8 +73,6 @@ export async function searchProducts(query, options = {}) {
 }
 
 export async function addProductLog(product, grams, nutriments) {
-    const token = localStorage.getItem("token");
-
   const body = {
     product: {
       productName: product.productName,
@@ -95,9 +92,9 @@ export async function addProductLog(product, grams, nutriments) {
 
   const res = await fetch(`${API_URL}/add`, {
     method: "POST",
+    credentials: 'include',
     headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`  
   },    body: JSON.stringify(body)
   });
 
@@ -112,8 +109,9 @@ export async function addProductLog(product, grams, nutriments) {
 
 
 export async function calculated(selectedProduct, grams) {
-  const response = await fetch(`${BASE_URL}/CalorieCalculator/calculate`, {
+  const response = await fetch(`${BASE_URL}/calculate`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       product: selectedProduct,

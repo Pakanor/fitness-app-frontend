@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import ProductItem from '../features/products/ProductItem';
-import ProductForm from '../features/products/ProductForm';
+import ProductItem from '../features/calories/ProductItem';
+import ProductForm from '../features/calories/ProductForm';
 import { getRecentLogs, deleteProductLog } from '../api/productAPI';
-import TotalsSummary from '../components/TotalsSummary';
+import TotalsSummary from '../features/calories/TotalsSummary';
 import { toast } from '../components/common/Toast';
 import Header from '../components/layout/Header';
 

@@ -2,15 +2,18 @@ import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../api/authAPI';
 import { toast } from '../../components/common/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 const RegisterForm = () => {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { user } = useAuth();
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) navigate('/calorie-tracker');
-      }, [navigate]);
+        if (user) {
+          navigate('/calorie-tracker');
+        }
+      }, [user, navigate]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');

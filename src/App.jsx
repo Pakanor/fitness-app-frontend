@@ -5,9 +5,11 @@ import CalorieTracer from './pages/CalorieTracer';
 import VerifyPage from './pages/VerifyPage';
 import HomePage from './pages/HomePage';
 import ExerciseStartPage from './pages/ExerciseStartPage';
+import DashboardPage from './pages/DashboardPage';
+import RecordsPage from './pages/RecordsPage';
 import LoginForm from './pages/LoginPage';
 import ProtectedRoute from './pages/ProtectedRoute';
-import { AuthProvider } from './hooks/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/common/Toast';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
         <Route path="/calorie-tracker" element={<ProtectedRoute><CalorieTracer /></ProtectedRoute>} />
         <Route path="/verify" element={<VerifyPage />} />
         <Route path="/exercise-start" element={<ProtectedRoute><ExerciseStartPage /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/records" element={<ProtectedRoute><RecordsPage /></ProtectedRoute>} />
       </Routes>
       </AuthProvider>
     </Router>
