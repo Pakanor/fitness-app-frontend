@@ -178,7 +178,7 @@ const LoginForm = () => {
           </form>
 
           <div className="lf-register">
-            Nie masz konta? <a href="/register">Zarejestruj się</a>
+            Nie masz konta? <button onClick={() => navigate('/register')} style={{ background: 'none', border: 'none', color: '#c8f542', cursor: 'pointer', textDecoration: 'underline', padding: 0, fontFamily: 'inherit', fontSize: 'inherit' }}>Zarejestruj się</button>
           </div>
         </div>
       </div>

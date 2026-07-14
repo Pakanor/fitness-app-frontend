@@ -217,18 +217,20 @@ function ProductItem({ logs = [], onDelete, onProductUpdated, selectedDate, setS
           ) : (
             <div className="pi-list">
               {logs.map((log) => (
-                <div key={log.id} className="pi-item">
-                  <div className="pi-item-name">{log.productName}</div>
+                <div key={log.id} className="pi-item" style={log.isPeri ? { background: 'rgba(200,245,66,0.05)', border: '1px solid rgba(200,245,66,0.2)' } : undefined}>
+                  <div className="pi-item-name" style={log.isPeri ? { color: '#c8f542' } : undefined}>{log.productName}</div>
                   {log.brands && <div className="pi-item-brand">{log.brands}</div>}
                   <div className="pi-nutrients">
                     <div className="pi-nutrient">
                       <span className="pi-nutrient-value accent">{parseFloat(log.energy).toFixed(0)}</span>
                       <span className="pi-nutrient-label">{log.energyUnit || 'kcal'}</span>
                     </div>
-                    <div className="pi-nutrient">
-                      <span className="pi-nutrient-value">{log.grams} g</span>
-                      <span className="pi-nutrient-label">ilość</span>
-                    </div>
+                    {!log.isPeri && (
+                      <div className="pi-nutrient">
+                        <span className="pi-nutrient-value">{log.grams} g</span>
+                        <span className="pi-nutrient-label">ilość</span>
+                      </div>
+                    )}
                     <div className="pi-nutrient">
                       <span className="pi-nutrient-value">{parseFloat(log.proteins).toFixed(1)}</span>
                       <span className="pi-nutrient-label">białko</span>
@@ -242,10 +244,12 @@ function ProductItem({ logs = [], onDelete, onProductUpdated, selectedDate, setS
                       <span className="pi-nutrient-label">węgle</span>
                     </div>
                   </div>
-                  <div className="pi-actions">
-                    <button className="pi-btn" onClick={() => openEditModal(log)}>Edytuj</button>
-                    <button className="pi-btn danger" onClick={() => onDelete(log.id)}>Usuń</button>
-                  </div>
+                  {!log.isPeri && (
+                    <div className="pi-actions">
+                      <button className="pi-btn" onClick={() => openEditModal(log)}>Edytuj</button>
+                      <button className="pi-btn danger" onClick={() => onDelete(log.id)}>Usuń</button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
