@@ -11,7 +11,7 @@ const LoginForm = () => {
   const { user, setUser } = useAuth();
   useEffect(() => {
     if (user) {
-      navigate('/calorie-tracker');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
   const handleSubmit = async (e) => {
@@ -22,7 +22,7 @@ const LoginForm = () => {
       const me = await fetchMe();
       setUser(me);
       toast('Logowanie udane!');
-      navigate('/calorie-tracker');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Nieznany błąd');
     }

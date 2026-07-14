@@ -23,7 +23,7 @@ const RegisterForm = () => {
   const { user } = useAuth();
   useEffect(() => {
     if (user) {
-      navigate('/calorie-tracker');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 

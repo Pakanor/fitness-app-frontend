@@ -30,6 +30,16 @@ export const AuthProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, []);
 
+  // Keep the measurement status in sync with the authenticated user so the
+  // "enter measurements" screen only shows for users who actually lack them.
+  useEffect(() => {
+    if (user) {
+      refreshMeasurementStatus();
+    } else {
+      setMeasurementStatus(null);
+    }
+  }, [user, refreshMeasurementStatus]);
+
   return (
     <AuthContext.Provider value={{ user, setUser, loading, measurementStatus, hasMeasurements: !!measurementStatus?.isComplete, refreshMeasurementStatus }}>
       {children}

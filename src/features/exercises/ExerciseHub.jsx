@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getExercisesByDate } from "../../api/exerciseAPI";
 import Header from "../../components/layout/Header";
-import AcwrDashboard from "./AcwrDashboard";
+import FatigueAnalysis from "./FatigueAnalysis";
 import WorkoutStartModal from "./WorkoutStartModal";
 import { templateAPI } from "../../api/templateAPI";
 
@@ -251,7 +251,7 @@ export default function ExerciseHub() {
           </div>
         </div>
 
-        <AcwrDashboard />
+        <FatigueAnalysis />
         </div>
       </div>
 

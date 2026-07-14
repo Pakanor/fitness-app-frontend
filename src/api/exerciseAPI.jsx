@@ -43,9 +43,3 @@ export const searchExercises = async (query) => {
   if (!res.ok) throw new Error('Błąd wyszukiwania');
   return await res.json();
 };
-
-export const getHeatmapData = async () => {
-  const res = await fetch(`/api/heatmap`, { credentials: 'include' });
-  if (!res.ok) throw new Error('Błąd pobierania heatmapy');
-  return await res.json();
-};
