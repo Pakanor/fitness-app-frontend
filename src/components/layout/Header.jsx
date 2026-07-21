@@ -1,18 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from '../common/Toast';
 import { logoutUser } from '../../api/authAPI';
 import { useAuth } from '../../context/AuthContext';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   const { setUser } = useAuth();
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     await logoutUser();
     setUser(null);
     toast('Wylogowano');
-    window.location.href = '/login';
+    navigate('/login');
+  };
+
+  const handleDropdownClick = (path) => {
+    setDropdownOpen(false);
+    navigate(path);
   };
 
   return (
@@ -26,11 +44,14 @@ function Header() {
         .nav-link { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #666; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: none; background: none; cursor: pointer; transition: color 0.15s, background 0.15s; white-space: nowrap; }
         .nav-link:hover { color: #f0ede8; background: #1e1e22; }
         .account-wrap { position: relative; }
-        .account-btn { display: flex; align-items: center; gap: 4px; }
-        .chevron { font-size: 9px; color: #444; }
-        .account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #16161a; border: 1px solid #1e1e22; border-radius: 10px; padding: 6px; min-width: 140px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .account-btn { display: flex; align-items: center; gap: 6px; }
+        .chevron { font-size: 9px; color: #444; transition: transform 0.2s; }
+        .chevron.open { transform: rotate(180deg); }
+        .account-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #16161a; border: 1px solid #1e1e22; border-radius: 10px; padding: 6px; min-width: 160px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 200; }
         .dropdown-item { font-family: 'DM Sans', sans-serif; font-size: 13px; color: #aaa; text-decoration: none; padding: 8px 12px; border-radius: 7px; border: none; background: none; cursor: pointer; text-align: left; transition: color 0.15s, background 0.15s; display: block; width: 100%; }
         .dropdown-item:hover { color: #f0ede8; background: #1e1e22; }
+        .dropdown-item.logout { color: #ff8a80; }
+        .dropdown-item.logout:hover { background: #2a1a1a; }
         .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
         .hamburger-line { width: 24px; height: 2px; background: #f0ede8; border-radius: 2px; transition: 0.3s; display: block; }
         .hamburger-line.open-1 { transform: rotate(45deg) translate(5px, 5px); }
@@ -42,20 +63,28 @@ function Header() {
       `}</style>
 
       <header className="site-header">
-        <a className="header-logo">Fitness<span>App</span></a>
+        <span className="header-logo" onClick={() => navigate('/')} role="link" tabIndex={0}>Fitness<span>App</span></span>
         <nav className="header-nav">
-          <a href="/exercise-start" className="nav-link">Ćwiczenia</a>
-          <a href="/dashboard" className="nav-link">Analiza</a>
-          <a href="/records" className="nav-link">Rekordy</a>
-          <a href="/calorie-tracker" className="nav-link">Kalorie</a>
-          <div className="account-wrap">
-            <button className="nav-link account-btn" onClick={() => setAccountOpen(o => !o)}>
-              Konto <span className="chevron">{accountOpen ? "▲" : "▼"}</span>
+          <button className="nav-link" onClick={() => navigate('/exercises')}>Ćwiczenia</button>
+          <button className="nav-link" onClick={() => navigate('/calorie-tracker')}>Kalorie</button>
+          <button className="nav-link" onClick={() => navigate('/records')}>Rekordy Życiowe</button>
+          <div className="account-wrap" ref={dropdownRef}>
+            <button className="nav-link account-btn" onClick={() => setDropdownOpen(o => !o)}>
+              Konto
+              <span className={`chevron ${dropdownOpen ? 'open' : ''}`}>▾</span>
             </button>
-            {accountOpen && (
+            {dropdownOpen && (
               <div className="account-dropdown">
-                <a href="/profile" className="dropdown-item" onClick={() => setAccountOpen(false)}>Profil</a>
-                <button className="dropdown-item" onClick={handleLogout}>Wyloguj się</button>
+                <button className="dropdown-item" onClick={() => handleDropdownClick('/profile?view=settings')}>
+                  Ustawienia konta
+                </button>
+                <button className="dropdown-item" onClick={() => handleDropdownClick('/profile?view=measurements')}>
+                  Dziennik pomiarów
+                </button>
+                <div style={{ height: 1, background: '#1e1e22', margin: '4px 0' }} />
+                <button className="dropdown-item logout" onClick={handleLogout}>
+                  Wyloguj się
+                </button>
               </div>
             )}
           </div>
@@ -68,12 +97,12 @@ function Header() {
       </header>
 
       <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
-        <a href="/exercise-start" className="nav-link" onClick={() => setMenuOpen(false)}>Ćwiczenia</a>
-        <a href="/dashboard" className="nav-link" onClick={() => setMenuOpen(false)}>Analiza</a>
-        <a href="/records" className="nav-link" onClick={() => setMenuOpen(false)}>Rekordy</a>
-        <a href="/calorie-tracker" className="nav-link" onClick={() => setMenuOpen(false)}>Kalorie</a>
-        <a href="/profile" className="nav-link" onClick={() => setMenuOpen(false)}>Profil</a>
-        <button className="nav-link" style={{ textAlign: 'left' }} onClick={handleLogout}>Wyloguj się</button>
+        <button className="nav-link" onClick={() => { setMenuOpen(false); navigate('/exercises'); }}>Ćwiczenia</button>
+        <button className="nav-link" onClick={() => { setMenuOpen(false); navigate('/calorie-tracker'); }}>Kalorie</button>
+        <button className="nav-link" onClick={() => { setMenuOpen(false); navigate('/records'); }}>Rekordy Życiowe</button>
+        <button className="nav-link" onClick={() => { setMenuOpen(false); navigate('/profile?view=settings'); }}>Ustawienia konta</button>
+        <button className="nav-link" onClick={() => { setMenuOpen(false); navigate('/profile?view=measurements'); }}>Dziennik pomiarów</button>
+        <button className="nav-link" style={{ textAlign: 'left', color: '#ff8a80' }} onClick={() => { setMenuOpen(false); handleLogout(); }}>Wyloguj się</button>
       </div>
     </>
   );

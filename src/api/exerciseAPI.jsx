@@ -32,14 +32,14 @@ export const deleteUserExercise = async (userExerciseId) => {
   await apiClient.delete(`/userexercise/${userExerciseId}`);
 };
 
-export const getAnatomicDashboard = async () => {
-  const res = await fetch(`/api/stats/anatomic-dashboard`, { credentials: 'include' });
-  if (!res.ok) throw new Error('Błąd pobierania dashboardu');
-  return await res.json();
-};
-
 export const getRecordsByExercise = async (exerciseId) => {
   const res = await fetch(`/api/records/exercise/${exerciseId}`, { credentials: 'include' });
   if (!res.ok) throw new Error('Błąd pobierania rekordów');
+  return await res.json();
+};
+
+export const searchExercises = async (query) => {
+  const res = await fetch(`/api/records/search?query=${encodeURIComponent(query)}`, { credentials: 'include' });
+  if (!res.ok) throw new Error('Błąd wyszukiwania');
   return await res.json();
 };

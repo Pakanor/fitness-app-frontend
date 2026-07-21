@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { addUserExercise, getExerciseCategory, getExercisesByBodyPart } from "../../api/exerciseAPI";
 import { toast } from "../../components/common/Toast";
 
-export default function AddExerciseModal({ open, onClose, onAdded }) {
+export default function AddExerciseModal({ open, onClose, onAdded, defaultDate }) {
   const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [categories, setCategories] = useState([]);
@@ -17,13 +17,14 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [rpe, setRpe] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [rir, setRir] = useState("");
+  const [date, setDate] = useState(defaultDate || new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
       setStep(0); setSelectedCategory(null); setSelectedExercise(null); setSearch("");
-      setSets(""); setReps(""); setWeight(""); setRpe(""); setDate(new Date().toISOString().slice(0, 10));
+      setSets(""); setReps(""); setWeight(""); setRpe(""); setRir(""); setDate(defaultDate || new Date().toISOString().slice(0, 10));
     }
   }, [open]);
 
@@ -48,6 +49,12 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
 
   const handleSubmit = async () => {
     if (!user?.id) { toast("Brak UserId w tokenie!", "error"); return; }
+    if (rpe && (parseInt(rpe) < 1 || parseInt(rpe) > 10)) {
+      toast("RPE musi być w zakresie 1-10", "error"); return;
+    }
+    if (rir && (parseInt(rir) < 0 || parseInt(rir) > 4)) {
+      toast("RIR musi być w zakresie 0-4", "error"); return;
+    }
     setLoading(true);
     try {
       await addUserExercise({
@@ -56,6 +63,7 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
         reps: reps ? parseInt(reps) : null,
         weight: weight ? parseFloat(weight) : null,
         rpe: rpe ? parseInt(rpe) : null,
+        rir: rir ? parseInt(rir) : null,
         date,
       });
       toast("Ćwiczenie dodane!");
@@ -148,7 +156,7 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
                         ? <div className="aem-empty">Brak wyników</div>
                         : filteredExercises.map(ex => (
                             <div key={ex.id} className="aem-ex-item" onClick={() => handleSelectExercise(ex)}>
-                              {ex.gifUrl && <img src={`http://localhost:5185${ex.gifUrl}`} alt={ex.name} className="aem-ex-gif" />}
+                              {ex.gifUrl && <img src={`http://localhost:8000${ex.gifUrl}`} alt={ex.name} className="aem-ex-gif" />}
                               <span className="aem-ex-name">{ex.name}</span>
                             </div>
                           ))
@@ -162,17 +170,21 @@ export default function AddExerciseModal({ open, onClose, onAdded }) {
               <>
                 {selectedExercise?.gifUrl && (
                   <div className="aem-gif-preview">
-                    <img src={`http://localhost:5185${selectedExercise.gifUrl}`} alt={selectedExercise.name} />
+                    <img src={`http://localhost:8000${selectedExercise.gifUrl}`} alt={selectedExercise.name} />
                   </div>
                 )}
                 {[
                   { label: "Serie", value: sets, set: setSets },
                   { label: "Powtórzenia", value: reps, set: setReps },
                   { label: "Waga (kg)", value: weight, set: setWeight },
-                  { label: "RPE (1-10)", value: rpe, set: setRpe },
-                ].map(({ label, value, set }) => (
+                  { label: "RPE (1-10)", value: rpe, set: setRpe, hint: "opcjonalne" },
+                  { label: "RIR (0-4)", value: rir, set: setRir, hint: "opcjonalne" },
+                ].map(({ label, value, set, hint }) => (
                   <div key={label} className="aem-field">
-                    <label className="aem-label">{label}</label>
+                    <label className="aem-label">
+                      {label}
+                      {hint && <span style={{ fontSize: 11, color: '#555', fontWeight: 400, marginLeft: 6 }}>({hint})</span>}
+                    </label>
                     <input className="aem-input" type="number" value={value} onChange={e => set(e.target.value)} />
                   </div>
                 ))}

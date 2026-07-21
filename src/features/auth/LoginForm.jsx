@@ -11,7 +11,7 @@ const LoginForm = () => {
   const { user, setUser } = useAuth();
   useEffect(() => {
     if (user) {
-      navigate('/calorie-tracker');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
   const handleSubmit = async (e) => {
@@ -22,7 +22,7 @@ const LoginForm = () => {
       const me = await fetchMe();
       setUser(me);
       toast('Logowanie udane!');
-      navigate('/calorie-tracker');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Nieznany błąd');
     }
@@ -178,7 +178,7 @@ const LoginForm = () => {
           </form>
 
           <div className="lf-register">
-            Nie masz konta? <a href="/register">Zarejestruj się</a>
+            Nie masz konta? <button onClick={() => navigate('/register')} style={{ background: 'none', border: 'none', color: '#c8f542', cursor: 'pointer', textDecoration: 'underline', padding: 0, fontFamily: 'inherit', fontSize: 'inherit' }}>Zarejestruj się</button>
           </div>
         </div>
       </div>

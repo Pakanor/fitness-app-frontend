@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import AddExerciseModal from "./AddExerciseModal";
 import { getExercisesByDate, deleteUserExercise } from "../../api/exerciseAPI";
+import { templateAPI } from "../../api/templateAPI";
 import DateSearch from "../../components/DateSearch";
 
 const categoryColors = {
@@ -18,7 +19,7 @@ function getCategoryColor(category = "") {
   return categoryColors[category.toLowerCase()] ?? categoryColors.default;
 }
 
-function ExerciseCard({ entry, onDelete }) {
+function ExerciseCard({ entry, onDelete, prev }) {
   const color = getCategoryColor(entry.category);
   const [deleting, setDeleting] = useState(false);
 
@@ -31,12 +32,14 @@ function ExerciseCard({ entry, onDelete }) {
     }
   };
 
+  const showPrevHint = prev && entry.weight == null && entry.reps == null;
+
   return (
     <div className="exercise-card" style={{ "--accent": color }}>
       <div className="card-left">
         {entry.gifUrl ? (
           <img
-            src={`http://localhost:5185${entry.gifUrl}`}
+            src={`http://localhost:8000${entry.gifUrl}`}
             alt={entry.name}
             className="exercise-gif"
           />
@@ -72,7 +75,24 @@ function ExerciseCard({ entry, onDelete }) {
               <span className="stat-label">kg</span>
             </div>
           )}
+          {entry.rpe != null && (
+            <div className="stat">
+              <span className="stat-value" style={{ color: '#c8f542' }}>{entry.rpe}</span>
+              <span className="stat-label">RPE</span>
+            </div>
+          )}
+          {entry.rir != null && (
+            <div className="stat">
+              <span className="stat-value" style={{ color: '#a855f7' }}>{entry.rir}</span>
+              <span className="stat-label">RIR</span>
+            </div>
+          )}
         </div>
+        {showPrevHint && (
+          <div className="prev-hint">
+            Poprzednio: {prev.weight} kg x {prev.reps} powt.
+          </div>
+        )}
       </div>
       <button
         className={`delete-btn ${deleting ? "deleting" : ""}`}
@@ -123,8 +143,9 @@ function TodayHeader({ count, date }) {
   );
 }
 
-export default function WorkoutDashboard() {
+export default function WorkoutDashboard({ onExerciseChange }) {
   const [exercises, setExercises] = useState([]);
+  const [prevMap, setPrevMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -138,6 +159,24 @@ export default function WorkoutDashboard() {
     try {
       const data = await getExercisesByDate(date);
       setExercises(data);
+
+      // Type-safe: if the session was copied from a template, fetch the prior
+      // completed workout for that template to render "Poprzednio" hints.
+      const templateId = data.find((e) => e.templateId)?.templateId;
+      if (templateId) {
+        try {
+          const prev = await templateAPI.getPreviousByTemplate(templateId);
+          const map = {};
+          prev.forEach((p) => {
+            map[p.exerciseId] = { weight: p.weight, reps: p.reps };
+          });
+          setPrevMap(map);
+        } catch {
+          setPrevMap({});
+        }
+      } else {
+        setPrevMap({});
+      }
     } catch (e) {
       setError(e.message || "Błąd pobierania ćwiczeń");
     } finally {
@@ -152,11 +191,13 @@ export default function WorkoutDashboard() {
   const handleDelete = async (userExerciseId) => {
     await deleteUserExercise(userExerciseId);
     setExercises((prev) => prev.filter((e) => e.userExerciseId !== userExerciseId));
+    onExerciseChange?.();
   };
 
   const handleExerciseAdded = () => {
     setModalOpen(false);
     fetchExercises(selectedDate);
+    onExerciseChange?.();
   };
 
   const handleDateSearch = (date) => {
@@ -375,6 +416,14 @@ export default function WorkoutDashboard() {
           letter-spacing: 0.5px;
         }
 
+        .prev-hint {
+          margin-top: 8px;
+          font-size: 12px;
+          color: #6b6b72;
+          font-style: italic;
+          line-height: 1.3;
+        }
+
         .delete-btn {
           position: absolute;
           top: 10px;
@@ -512,7 +561,7 @@ export default function WorkoutDashboard() {
             ) : (
               <div className="exercise-list">
                 {exercises.map((entry) => (
-                  <ExerciseCard key={entry.userExerciseId} entry={entry} onDelete={handleDelete} />
+                  <ExerciseCard key={entry.userExerciseId} entry={entry} onDelete={handleDelete} prev={prevMap[entry.exerciseId]} />
                 ))}
               </div>
             )}
@@ -531,6 +580,7 @@ export default function WorkoutDashboard() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onAdded={handleExerciseAdded}
+        defaultDate={selectedDate}
       />
     </>
   );
