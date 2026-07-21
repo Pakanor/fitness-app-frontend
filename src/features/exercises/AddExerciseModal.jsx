@@ -156,7 +156,7 @@ export default function AddExerciseModal({ open, onClose, onAdded, defaultDate }
                         ? <div className="aem-empty">Brak wyników</div>
                         : filteredExercises.map(ex => (
                             <div key={ex.id} className="aem-ex-item" onClick={() => handleSelectExercise(ex)}>
-                              {ex.gifUrl && <img src={`http://localhost:5185${ex.gifUrl}`} alt={ex.name} className="aem-ex-gif" />}
+                              {ex.gifUrl && <img src={`http://localhost:8000${ex.gifUrl}`} alt={ex.name} className="aem-ex-gif" />}
                               <span className="aem-ex-name">{ex.name}</span>
                             </div>
                           ))
@@ -170,7 +170,7 @@ export default function AddExerciseModal({ open, onClose, onAdded, defaultDate }
               <>
                 {selectedExercise?.gifUrl && (
                   <div className="aem-gif-preview">
-                    <img src={`http://localhost:5185${selectedExercise.gifUrl}`} alt={selectedExercise.name} />
+                    <img src={`http://localhost:8000${selectedExercise.gifUrl}`} alt={selectedExercise.name} />
                   </div>
                 )}
                 {[

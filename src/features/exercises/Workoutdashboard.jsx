@@ -39,7 +39,7 @@ function ExerciseCard({ entry, onDelete, prev }) {
       <div className="card-left">
         {entry.gifUrl ? (
           <img
-            src={`http://localhost:5185${entry.gifUrl}`}
+            src={`http://localhost:8000${entry.gifUrl}`}
             alt={entry.name}
             className="exercise-gif"
           />

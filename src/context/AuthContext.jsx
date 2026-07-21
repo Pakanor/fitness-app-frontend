@@ -22,11 +22,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     axios.get("http://localhost:8000/api/auth/me", { withCredentials: true })
       .then((res) => {
-        setUser(res.data);
+        setUser(res.data.authenticated ? res.data : null);
       })
-      .catch(() => {
-        setUser(null);
-      })
+      .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 

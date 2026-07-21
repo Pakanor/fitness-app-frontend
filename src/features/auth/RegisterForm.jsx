@@ -4,19 +4,9 @@ import { registerUser } from '../../api/authAPI';
 import { toast } from '../../components/common/Toast';
 import { useAuth } from '../../context/AuthContext';
 
-const JOB_TYPES = [
-  { value: 'sedentary', label: 'Siedzący (1.2)' },
-  { value: 'light_active', label: 'Lekki (1.375)' },
-  { value: 'moderate_active', label: 'Umiarkowany (1.55)' },
-  { value: 'very_active', label: 'Aktywny (1.725)' },
-  { value: 'extra_active', label: 'Bardzo aktywny (1.9)' },
-];
-
 const RegisterForm = () => {
   const [form, setForm] = useState({
-    username: '', email: '', password: '',
-    birthDate: '', height: '', currentWeight: '',
-    gender: 'male', jobType: 'sedentary'
+    username: '', email: '', password: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -36,16 +26,11 @@ const RegisterForm = () => {
       const payload = {
         username: form.username,
         email: form.email,
-        password: form.password,
-        birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : null,
-        height: form.height ? parseFloat(form.height) : null,
-        currentWeight: form.currentWeight ? parseFloat(form.currentWeight) : null,
-        gender: form.gender,
-        jobType: form.jobType,
+        password: form.password
       };
       const res = await registerUser(payload);
       toast('Rejestracja udana: ' + res.message);
-      navigate('/verify');
+      window.location.href = '/verify';
     } catch (err) {
       setError(err.response?.data?.message || 'Nieznany błąd');
     }
@@ -97,42 +82,6 @@ const RegisterForm = () => {
             <div className="rf-field">
               <label className="rf-label">Hasło</label>
               <input className="rf-input" type="password" name="password" value={form.password} onChange={handleChange} placeholder="••••••••" required />
-            </div>
-
-            <div className="rf-field" style={{ borderTop: '1px solid #1e1e22', paddingTop: 16, marginBottom: 12 }}>
-              <label style={{ fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 600, color: '#c8f542', display: 'block', marginBottom: 12 }}>Metryki bazowe (wymagane)</label>
-
-              <div className="rf-row">
-                <div className="rf-field">
-                  <label className="rf-label">Data urodzenia</label>
-                  <input className="rf-input" type="date" name="birthDate" value={form.birthDate} onChange={handleChange} required />
-                </div>
-                <div className="rf-field">
-                  <label className="rf-label">Płeć</label>
-                  <select className="rf-select" name="gender" value={form.gender} onChange={handleChange}>
-                    <option value="male">Mężczyzna</option>
-                    <option value="female">Kobieta</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="rf-row">
-                <div className="rf-field">
-                  <label className="rf-label">Wzrost (cm)</label>
-                  <input className="rf-input" type="number" step="0.1" name="height" value={form.height} onChange={handleChange} placeholder="180" required />
-                </div>
-                <div className="rf-field">
-                  <label className="rf-label">Waga (kg)</label>
-                  <input className="rf-input" type="number" step="0.1" name="currentWeight" value={form.currentWeight} onChange={handleChange} placeholder="80" required />
-                </div>
-              </div>
-
-              <div className="rf-field">
-                <label className="rf-label">Typ pracy (PAL)</label>
-                <select className="rf-select" name="jobType" value={form.jobType} onChange={handleChange}>
-                  {JOB_TYPES.map(jt => <option key={jt.value} value={jt.value}>{jt.label}</option>)}
-                </select>
-              </div>
             </div>
 
             <button type="submit" className="rf-submit">Zarejestruj się</button>
