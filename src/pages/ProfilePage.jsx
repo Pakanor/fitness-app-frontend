@@ -274,10 +274,13 @@ const MEASUREMENT_FIELDS = [
   { name: 'forearmRight', label: 'Przedramię P (cm)' },
   { name: 'waist', label: 'Pas (cm)' },
   { name: 'belly', label: 'Brzuch (cm)' },
+  { name: 'hips', label: 'Biodra (cm)' },
   { name: 'thighLeft', label: 'Udo L (cm)' },
   { name: 'thighRight', label: 'Udo P (cm)' },
   { name: 'calfLeft', label: 'Łydka L (cm)' },
   { name: 'calfRight', label: 'Łydka P (cm)' },
+  { name: 'neck', label: 'Szyja (cm)' },
+  { name: 'shoulders', label: 'Barki (cm)' },
 ];
 
 const SIDED_FIELDS = [
@@ -339,7 +342,7 @@ function MeasurementsPage({ profileHeight }) {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { neck: 0, hips: 0, shoulders: 0, gender: 'male' };
+      const payload = {};
       for (const f of MEASUREMENT_FIELDS) {
         const val = parseFloat(form[f.name]);
         if (!isNaN(val)) payload[f.name] = val;
@@ -370,19 +373,21 @@ function MeasurementsPage({ profileHeight }) {
 
   return (
     <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-      <div style={{ background: '#16161a', border: '1px solid #1e1e22', borderRadius: 12, padding: 20, maxWidth: 320, flex: 1 }}>
-        <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, color: '#f0ede8', margin: '0 0 16px' }}>
+      <div style={{ background: '#16161a', border: '1px solid #1e1e22', borderRadius: 12, padding: 16, flex: 1, alignSelf: 'flex-start' }}>
+        <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, color: '#f0ede8', margin: '0 0 12px' }}>
           Nowy <span style={{ color: '#c8f542' }}>pomiar</span>
         </h3>
-        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {MEASUREMENT_FIELDS.map(f => (
-            <div key={f.name}>
-              <label style={lbl}>{f.label}</label>
-              <input name={f.name} type="number" step="0.1" value={form[f.name] || ''} onChange={handleChange} style={inp} />
-            </div>
-          ))}
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+            {MEASUREMENT_FIELDS.map(f => (
+              <div key={f.name}>
+                <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 2 }}>{f.label}</label>
+                <input name={f.name} type="number" step="0.1" value={form[f.name] || ''} onChange={handleChange} style={{ width: '100%', padding: '5px 8px', background: '#0d0d0f', border: '1px solid #2a2a30', borderRadius: 6, color: '#f0ede8', fontSize: 12, boxSizing: 'border-box' }} />
+              </div>
+            ))}
+          </div>
           <button type="submit" disabled={saving}
-            style={{ padding: '10px 20px', background: '#c8f542', border: 'none', borderRadius: 8, color: '#0d0d0f', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 13, cursor: 'pointer', marginTop: 4 }}>
+            style={{ padding: '8px 16px', background: '#c8f542', border: 'none', borderRadius: 6, color: '#0d0d0f', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 12, cursor: 'pointer', marginTop: 2 }}>
             {saving ? 'Zapisywanie...' : 'Zapisz pomiar'}
           </button>
         </form>
@@ -408,10 +413,13 @@ function MeasurementsPage({ profileHeight }) {
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Przed P</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Pas</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Brzuch</th>
+                <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Biodra</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Udo L</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Udo P</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Łyd L</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Łyd P</th>
+                <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Szyja</th>
+                <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30' }}>Barki</th>
                 <th style={{ textAlign: 'left', padding: '4px 6px', color: '#888', borderBottom: '1px solid #2a2a30', width: 30 }} />
               </tr>
             </thead>
@@ -428,10 +436,13 @@ function MeasurementsPage({ profileHeight }) {
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.forearmRight ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.waist ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.belly ?? '—'}</td>
+                  <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.hips ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.thighLeft ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.thighRight ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.calfLeft ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.calfRight ?? '—'}</td>
+                  <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.neck ?? '—'}</td>
+                  <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22', color: '#f0ede8' }}>{m.shoulders ?? '—'}</td>
                   <td style={{ padding: '4px 6px', borderBottom: '1px solid #1e1e22' }}>
                     <button onClick={() => handleDelete(m.id)} style={{ background: 'none', border: 'none', color: '#ff5252', cursor: 'pointer', fontSize: 12, padding: 2 }}>✕</button>
                   </td>
